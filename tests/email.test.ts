@@ -164,3 +164,43 @@ describe("Spam filtering", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 6. Escalation readiness
+// ---------------------------------------------------------------------------
+describe("Escalation readiness", () => {
+  it("critical client emails preserve deadline or exposure signals in summaries", () => {
+    const criticalClientEmails = demoEmails.filter(
+      (e) => e.category === "urgent-client" && e.priority === "critical",
+    );
+
+    criticalClientEmails.forEach((email) => {
+      expect(email.aiSummary).toMatch(
+        /\b(\d+\s?(hours?|days?)|today|overdue|lost|fine|deadline|escalation|RCA)\b/i,
+      );
+    });
+  });
+
+  it("critical client emails have at least one time-bound extracted task", () => {
+    const criticalClientEmails = demoEmails.filter(
+      (e) => e.category === "urgent-client" && e.priority === "critical",
+    );
+
+    criticalClientEmails.forEach((email) => {
+      expect(email.extractedTasks.some((task) => task.dueDate !== null)).toBe(true);
+    });
+  });
+
+  it("critical client draft responses acknowledge urgency with a concrete next step", () => {
+    const criticalClientEmails = demoEmails.filter(
+      (e) => e.category === "urgent-client" && e.priority === "critical",
+    );
+
+    criticalClientEmails.forEach((email) => {
+      expect(email.draftResponse).not.toBeNull();
+      expect(email.draftResponse?.body).toMatch(
+        /\b(ETA|within|today|EOD|updates?|estimates?|delivery)\b/i,
+      );
+    });
+  });
+});
