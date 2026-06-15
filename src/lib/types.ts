@@ -21,6 +21,8 @@ export interface EmailThread {
   receivedAt: string; // ISO timestamp
   category: TriageCategory;
   priority: PriorityLevel;
+  /** AI classifier confidence (0–1). Values below 0.85 indicate borderline classifications that warrant human review. */
+  confidence: number;
   isRead: boolean;
   aiSummary: string;
   draftResponse: DraftResponse | null;

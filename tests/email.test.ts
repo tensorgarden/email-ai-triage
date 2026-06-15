@@ -166,8 +166,41 @@ describe("Spam filtering", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 6. Escalation readiness
+// 7. Classification confidence
 // ---------------------------------------------------------------------------
+describe("Classification confidence", () => {
+  it("every email has confidence between 0 and 1", () => {
+    demoEmails.forEach((e) => {
+      expect(e.confidence).toBeGreaterThanOrEqual(0);
+      expect(e.confidence).toBeLessThanOrEqual(1);
+    });
+  });
+
+  it("at least one email has borderline confidence below 0.90", () => {
+    const borderline = demoEmails.filter((e) => e.confidence < 0.9);
+    expect(borderline.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("at least one email has high confidence above 0.95", () => {
+    const highConf = demoEmails.filter((e) => e.confidence > 0.95);
+    expect(highConf.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("spam classifications have confidence above 0.95", () => {
+    const spam = demoEmails.filter((e) => e.category === "spam");
+    expect(spam.length).toBeGreaterThan(0);
+    spam.forEach((e) => {
+      expect(e.confidence).toBeGreaterThan(0.95);
+    });
+  });
+
+  it("at least one non-spam classification has confidence below 0.90 to demonstrate review-worthy cases", () => {
+    const reviewWorthy = demoEmails.filter(
+      (e) => e.category !== "spam" && e.confidence < 0.9,
+    );
+    expect(reviewWorthy.length).toBeGreaterThanOrEqual(1);
+  });
+});
 describe("Escalation readiness", () => {
   it("critical client emails preserve deadline or exposure signals in summaries", () => {
     const criticalClientEmails = demoEmails.filter(
