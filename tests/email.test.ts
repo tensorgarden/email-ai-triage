@@ -5,6 +5,7 @@ import {
   demoTasks,
   demoDigest,
   demoStats,
+  demoReviewQueue,
 } from "@/lib/demo-data";
 import type {
   TriageCategory,
@@ -201,6 +202,58 @@ describe("Classification confidence", () => {
     expect(reviewWorthy.length).toBeGreaterThanOrEqual(1);
   });
 });
+
+// ---------------------------------------------------------------------------
+// 8. Human review safeguards
+// ---------------------------------------------------------------------------
+describe("Human review queue", () => {
+  const emailsById = new Map(demoEmails.map((e) => [e.id, e]));
+
+  it("blocks auto-send for every queued item", () => {
+    expect(demoReviewQueue.length).toBeGreaterThan(0);
+    demoReviewQueue.forEach((item) => {
+      expect(item.autoSendBlocked).toBe(true);
+      expect(item.reviewerAction.length).toBeGreaterThan(0);
+      expect(item.riskNote.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("only references existing emails", () => {
+    demoReviewQueue.forEach((item) => {
+      expect(emailsById.has(item.emailId)).toBe(true);
+    });
+  });
+
+  it("queues every non-spam low-confidence email for human review", () => {
+    const queuedEmailIds = new Set(demoReviewQueue.map((item) => item.emailId));
+    const lowConfidenceNonSpam = demoEmails.filter(
+      (email) => email.category !== "spam" && email.confidence < 0.9,
+    );
+
+    expect(lowConfidenceNonSpam.length).toBeGreaterThan(0);
+    lowConfidenceNonSpam.forEach((email) => {
+      expect(queuedEmailIds.has(email.id)).toBe(true);
+    });
+  });
+
+  it("legal-risk queue items reference legal or compliance signals", () => {
+    const legalRiskItems = demoReviewQueue.filter(
+      (item) => item.reason === "legal-risk",
+    );
+
+    expect(legalRiskItems.length).toBeGreaterThan(0);
+    legalRiskItems.forEach((item) => {
+      const email = emailsById.get(item.emailId);
+      expect(`${email?.subject} ${email?.body} ${email?.aiSummary}`).toMatch(
+        /\b(GDPR|DSAR|solicitor|regulator|compliance|HIPAA)\b/i,
+      );
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 9. Escalation readiness
+// ---------------------------------------------------------------------------
 describe("Escalation readiness", () => {
   it("critical client emails preserve deadline or exposure signals in summaries", () => {
     const criticalClientEmails = demoEmails.filter(

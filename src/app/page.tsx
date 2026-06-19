@@ -7,6 +7,7 @@ import {
   demoStats,
   demoDrafts,
   demoTasks,
+  demoReviewQueue,
 } from "@/lib/demo-data";
 import type {
   EmailThread,
@@ -16,6 +17,7 @@ import type {
   SortDirection,
   DailyDigest,
   DashboardStats,
+  ReviewQueueItem,
 } from "@/lib/types";
 
 // ─────────────────────── Inline UI Components ───────────────────────
@@ -140,6 +142,12 @@ const PRIORITY_BADGE: Record<PriorityLevel, "critical" | "high" | "medium" | "lo
   low: "low",
 };
 
+const REVIEW_REASON_LABELS: Record<ReviewQueueItem["reason"], string> = {
+  "low-confidence": "Low confidence",
+  "critical-client": "Critical client",
+  "legal-risk": "Legal risk",
+};
+
 function formatRelativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
@@ -236,6 +244,44 @@ function DailyDigestPanel({ digest }: { digest: DailyDigest }) {
           </li>
         ))}
       </ul>
+    </Card>
+  );
+}
+
+function ReviewQueuePanel() {
+  const reviewItems = demoReviewQueue.map((item) => ({
+    item,
+    email: demoEmails.find((email) => email.id === item.emailId),
+  }));
+
+  return (
+    <Card>
+      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        Human Review Queue ({demoReviewQueue.length})
+      </h3>
+      <div className="space-y-3">
+        {reviewItems.map(({ item, email }) => (
+          <div key={item.id} className="rounded-lg border border-amber-100 bg-amber-50/50 p-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-ink">
+                  {email?.subject ?? "Unknown email"}
+                </p>
+                <p className="mt-0.5 text-xs text-amber-700">
+                  {REVIEW_REASON_LABELS[item.reason]} &middot; Auto-send blocked
+                </p>
+              </div>
+              <Badge label="Review" variant="high" />
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-slate-600">
+              {item.riskNote}
+            </p>
+            <p className="mt-2 text-xs font-medium text-slate-700">
+              Next: {item.reviewerAction}
+            </p>
+          </div>
+        ))}
+      </div>
     </Card>
   );
 }
@@ -609,6 +655,7 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <DailyDigestPanel digest={demoDigest} />
           <CategoryBreakdown digest={demoDigest} />
+          <ReviewQueuePanel />
           <DraftPanel />
           <TasksPanel />
         </div>

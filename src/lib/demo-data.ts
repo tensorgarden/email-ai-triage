@@ -4,6 +4,7 @@ import type {
   AdminTask,
   DailyDigest,
   DashboardStats,
+  ReviewQueueItem,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -696,6 +697,48 @@ export const demoDrafts: DraftResponse[] = demoEmails
 export const demoTasks: AdminTask[] = demoEmails.flatMap((e) =>
   e.extractedTasks.map((t) => ({ ...t })),
 );
+
+// ---------------------------------------------------------------------------
+// Human Review Queue — safeguards for low-confidence or high-risk automation
+// ---------------------------------------------------------------------------
+export const demoReviewQueue: ReviewQueueItem[] = [
+  {
+    id: "rq-001",
+    emailId: "e-001",
+    reason: "critical-client",
+    reviewerAction: "Approve incident response before sending",
+    riskNote:
+      "Production outage communications commit to ETAs and status updates, so an operator should confirm the remediation plan first.",
+    autoSendBlocked: true,
+  },
+  {
+    id: "rq-002",
+    emailId: "e-002",
+    reason: "legal-risk",
+    reviewerAction: "Compliance lead must approve the DSAR response",
+    riskNote:
+      "GDPR DSAR is overdue with solicitor and regulator exposure; the draft should not auto-send legal commitments.",
+    autoSendBlocked: true,
+  },
+  {
+    id: "rq-003",
+    emailId: "e-004",
+    reason: "low-confidence",
+    reviewerAction: "Confirm category, HIPAA scope, and board deadline before sending",
+    riskNote:
+      "Classifier confidence is 0.88 and the message mixes proposal follow-up with healthcare compliance details.",
+    autoSendBlocked: true,
+  },
+  {
+    id: "rq-004",
+    emailId: "e-012",
+    reason: "low-confidence",
+    reviewerAction: "Verify survey deadline before creating the task",
+    riskNote:
+      "Classifier confidence is 0.85; internal survey reminders should be checked before adding work to someone's queue.",
+    autoSendBlocked: true,
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Daily Digest

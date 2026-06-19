@@ -8,6 +8,8 @@ export type TriageCategory =
 
 export type PriorityLevel = "critical" | "high" | "medium" | "low";
 
+export type ReviewReason = "low-confidence" | "critical-client" | "legal-risk";
+
 export interface EmailThread {
   id: string;
   subject: string;
@@ -21,7 +23,7 @@ export interface EmailThread {
   receivedAt: string; // ISO timestamp
   category: TriageCategory;
   priority: PriorityLevel;
-  /** AI classifier confidence (0–1). Values below 0.85 indicate borderline classifications that warrant human review. */
+  /** AI classifier confidence (0–1). Values below 0.90 indicate borderline classifications that warrant human review. */
   confidence: number;
   isRead: boolean;
   aiSummary: string;
@@ -45,6 +47,15 @@ export interface AdminTask {
   description: string;
   dueDate: string | null; // ISO date string or null
   sourceQuote: string; // relevant snippet from the email
+}
+
+export interface ReviewQueueItem {
+  id: string;
+  emailId: string;
+  reason: ReviewReason;
+  reviewerAction: string;
+  riskNote: string;
+  autoSendBlocked: boolean;
 }
 
 export interface DailyDigest {
