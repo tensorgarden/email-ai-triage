@@ -218,6 +218,27 @@ describe("Human review queue", () => {
     });
   });
 
+  it("includes source evidence quotes for every queued item", () => {
+    demoReviewQueue.forEach((item) => {
+      expect(item.evidenceQuotes.length).toBeGreaterThan(0);
+      item.evidenceQuotes.forEach((quote) => {
+        expect(quote.trim().length).toBeGreaterThan(10);
+      });
+    });
+  });
+
+  it("grounds every evidence quote in the source email", () => {
+    demoReviewQueue.forEach((item) => {
+      const email = emailsById.get(item.emailId);
+      expect(email).toBeDefined();
+      const sourceText = `${email?.subject} ${email?.preview} ${email?.body} ${email?.aiSummary}`;
+
+      item.evidenceQuotes.forEach((quote) => {
+        expect(sourceText).toContain(quote);
+      });
+    });
+  });
+
   it("only references existing emails", () => {
     demoReviewQueue.forEach((item) => {
       expect(emailsById.has(item.emailId)).toBe(true);

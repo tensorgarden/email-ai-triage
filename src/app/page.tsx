@@ -276,6 +276,23 @@ function ReviewQueuePanel() {
             <p className="mt-2 text-xs leading-relaxed text-slate-600">
               {item.riskNote}
             </p>
+            {item.evidenceQuotes.length > 0 && (
+              <div className="mt-2 rounded-md border border-amber-200 bg-white/70 p-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">
+                  Evidence to verify
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {item.evidenceQuotes.map((quote) => (
+                    <li
+                      key={quote}
+                      className="text-xs italic leading-relaxed text-slate-600"
+                    >
+                      &ldquo;{quote}&rdquo;
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <p className="mt-2 text-xs font-medium text-slate-700">
               Next: {item.reviewerAction}
             </p>

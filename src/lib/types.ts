@@ -55,6 +55,8 @@ export interface ReviewQueueItem {
   reason: ReviewReason;
   reviewerAction: string;
   riskNote: string;
+  /** Source snippets the reviewer should verify before trusting the AI classification or draft. */
+  evidenceQuotes: string[];
   autoSendBlocked: boolean;
 }
 

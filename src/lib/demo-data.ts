@@ -709,6 +709,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     reviewerAction: "Approve incident response before sending",
     riskNote:
       "Production outage communications commit to ETAs and status updates, so an operator should confirm the remediation plan first.",
+    evidenceQuotes: [
+      "Customers are hitting the payment step and getting a white screen.",
+      "costing us roughly $4,000 per hour in lost revenue.",
+    ],
     autoSendBlocked: true,
   },
   {
@@ -718,6 +722,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     reviewerAction: "Compliance lead must approve the DSAR response",
     riskNote:
       "GDPR DSAR is overdue with solicitor and regulator exposure; the draft should not auto-send legal commitments.",
+    evidenceQuotes: [
+      "3 days past the 30-day statutory deadline under Article 15 of GDPR.",
+      "the user's solicitor sent a follow-up this morning threatening to escalate.",
+    ],
     autoSendBlocked: true,
   },
   {
@@ -727,6 +735,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     reviewerAction: "Confirm category, HIPAA scope, and board deadline before sending",
     riskNote:
       "Classifier confidence is 0.88 and the message mixes proposal follow-up with healthcare compliance details.",
+    evidenceQuotes: [
+      "patient-outcomes programme",
+      "HIPAA-compliant audit logging",
+    ],
     autoSendBlocked: true,
   },
   {
@@ -736,6 +748,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     reviewerAction: "Verify survey deadline before creating the task",
     riskNote:
       "Classifier confidence is 0.85; internal survey reminders should be checked before adding work to someone's queue.",
+    evidenceQuotes: [
+      "anonymous and takes about 5 minutes.",
+      "Deadline: Friday 5pm.",
+    ],
     autoSendBlocked: true,
   },
 ];
