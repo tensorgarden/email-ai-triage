@@ -148,6 +148,12 @@ const REVIEW_REASON_LABELS: Record<ReviewQueueItem["reason"], string> = {
   "legal-risk": "Legal risk",
 };
 
+const REVIEW_LOCKS_BY_EMAIL_ID = new Map(
+  demoReviewQueue
+    .filter((item) => item.autoSendBlocked)
+    .map((item) => [item.emailId, item]),
+);
+
 function formatRelativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
@@ -305,6 +311,7 @@ function ReviewQueuePanel() {
 
 function EmailRow({ email }: { email: EmailThread }) {
   const [expanded, setExpanded] = useState(false);
+  const reviewLock = REVIEW_LOCKS_BY_EMAIL_ID.get(email.id);
 
   return (
     <div className="border-b border-slate-100 last:border-b-0">
@@ -378,9 +385,15 @@ function EmailRow({ email }: { email: EmailThread }) {
               <div className="mt-2 flex gap-2">
                 <button
                   type="button"
-                  className="rounded-md bg-accent px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-accent/90"
+                  disabled={Boolean(reviewLock)}
+                  aria-describedby={reviewLock ? `${email.id}-review-lock` : undefined}
+                  className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                    reviewLock
+                      ? "cursor-not-allowed bg-amber-200 text-amber-900"
+                      : "bg-accent text-white hover:bg-accent/90"
+                  }`}
                 >
-                  Send
+                  {reviewLock ? "Review required" : "Send"}
                 </button>
                 <button
                   type="button"
@@ -395,6 +408,14 @@ function EmailRow({ email }: { email: EmailThread }) {
                   Discard
                 </button>
               </div>
+              {reviewLock && (
+                <p
+                  id={`${email.id}-review-lock`}
+                  className="mt-2 text-xs font-medium text-amber-700"
+                >
+                  Review before send: {reviewLock.reviewerAction}
+                </p>
+              )}
             </div>
           )}
 
@@ -450,6 +471,7 @@ function DraftPanel() {
       <div className="max-h-96 space-y-3 overflow-y-auto">
         {demoDrafts.map((draft) => {
           const email = demoEmails.find((e) => e.id === draft.emailId);
+          const reviewLock = REVIEW_LOCKS_BY_EMAIL_ID.get(draft.emailId);
           return (
             <div
               key={draft.id}
@@ -470,9 +492,19 @@ function DraftPanel() {
               <div className="mt-2 flex gap-2">
                 <button
                   type="button"
-                  className="rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-accent/90"
+                  disabled={Boolean(reviewLock)}
+                  aria-label={
+                    reviewLock
+                      ? `Review required before sending draft for ${email?.subject ?? draft.subject}`
+                      : `Send draft for ${email?.subject ?? draft.subject}`
+                  }
+                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                    reviewLock
+                      ? "cursor-not-allowed bg-amber-200 text-amber-900"
+                      : "bg-accent text-white hover:bg-accent/90"
+                  }`}
                 >
-                  Send
+                  {reviewLock ? "Review required" : "Send"}
                 </button>
                 <button
                   type="button"
@@ -481,6 +513,11 @@ function DraftPanel() {
                   Edit
                 </button>
               </div>
+              {reviewLock && (
+                <p className="mt-2 text-[11px] font-medium text-amber-700">
+                  Review gate: {reviewLock.reviewerAction}
+                </p>
+              )}
             </div>
           );
         })}
