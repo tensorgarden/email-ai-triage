@@ -239,6 +239,16 @@ describe("Human review queue", () => {
     });
   });
 
+  it("requires concrete source-check and approval steps before release", () => {
+    demoReviewQueue.forEach((item) => {
+      expect(item.verificationChecklist.length).toBeGreaterThanOrEqual(2);
+
+      const checklistText = item.verificationChecklist.join(" ");
+      expect(checklistText).toMatch(/\b(confirm|verify|validate)\b/i);
+      expect(checklistText).toMatch(/\b(approve|approval|approving)\b/i);
+    });
+  });
+
   it("only references existing emails", () => {
     demoReviewQueue.forEach((item) => {
       expect(emailsById.has(item.emailId)).toBe(true);

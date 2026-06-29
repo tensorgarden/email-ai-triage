@@ -713,6 +713,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
       "Customers are hitting the payment step and getting a white screen.",
       "costing us roughly $4,000 per hour in lost revenue.",
     ],
+    verificationChecklist: [
+      "Confirm incident details and revenue exposure match the source email.",
+      "Verify the remediation ETA with the on-call engineering lead before approving the draft.",
+    ],
     autoSendBlocked: true,
   },
   {
@@ -725,6 +729,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     evidenceQuotes: [
       "3 days past the 30-day statutory deadline under Article 15 of GDPR.",
       "the user's solicitor sent a follow-up this morning threatening to escalate.",
+    ],
+    verificationChecklist: [
+      "Confirm DSAR deadline, Article 15 reference, and solicitor escalation in the source email.",
+      "Get compliance lead approval for any legal commitment before sending.",
     ],
     autoSendBlocked: true,
   },
@@ -739,6 +747,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
       "patient-outcomes programme",
       "HIPAA-compliant audit logging",
     ],
+    verificationChecklist: [
+      "Confirm the healthcare compliance scope and board deadline against the source email.",
+      "Have the account owner approve budget and timeline language before sending.",
+    ],
     autoSendBlocked: true,
   },
   {
@@ -751,6 +763,10 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     evidenceQuotes: [
       "anonymous and takes about 5 minutes.",
       "Deadline: Friday 5pm.",
+    ],
+    verificationChecklist: [
+      "Confirm the Friday 5pm deadline and anonymous-survey context before creating the task.",
+      "Have the manager or requester approve whether this should become an assigned task.",
     ],
     autoSendBlocked: true,
   },

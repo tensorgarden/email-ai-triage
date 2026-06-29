@@ -57,6 +57,8 @@ export interface ReviewQueueItem {
   riskNote: string;
   /** Source snippets the reviewer should verify before trusting the AI classification or draft. */
   evidenceQuotes: string[];
+  /** Concrete steps a human must complete before approving the AI classification or draft. */
+  verificationChecklist: string[];
   autoSendBlocked: boolean;
 }
 

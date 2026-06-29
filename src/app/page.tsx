@@ -299,6 +299,26 @@ function ReviewQueuePanel() {
                 </ul>
               </div>
             )}
+            {item.verificationChecklist.length > 0 && (
+              <div className="mt-2 rounded-md border border-slate-200 bg-white/70 p-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                  Verification checklist
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {item.verificationChecklist.map((step) => (
+                    <li
+                      key={step}
+                      className="flex gap-1 text-xs leading-relaxed text-slate-600"
+                    >
+                      <span aria-hidden="true" className="mt-0.5 text-amber-600">
+                        ✓
+                      </span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <p className="mt-2 text-xs font-medium text-slate-700">
               Next: {item.reviewerAction}
             </p>
