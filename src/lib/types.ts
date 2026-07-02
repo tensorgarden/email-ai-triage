@@ -57,6 +57,10 @@ export interface ReviewQueueItem {
   riskNote: string;
   /** Source snippets the reviewer should verify before trusting the AI classification or draft. */
   evidenceQuotes: string[];
+  /** Accountable human role required to approve or correct the AI output. */
+  approvalOwner: string;
+  /** Time budget, in hours from receipt, for completing human review before the queue item is escalated. */
+  reviewSlaHours: number;
   /** Concrete steps a human must complete before approving the AI classification or draft. */
   verificationChecklist: string[];
   autoSendBlocked: boolean;

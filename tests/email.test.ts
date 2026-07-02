@@ -249,6 +249,25 @@ describe("Human review queue", () => {
     });
   });
 
+  it("assigns every review gate to a human owner with a time-bound SLA", () => {
+    demoReviewQueue.forEach((item) => {
+      expect(item.approvalOwner.trim().length).toBeGreaterThan(3);
+      expect(Number.isFinite(item.reviewSlaHours)).toBe(true);
+      expect(item.reviewSlaHours).toBeGreaterThan(0);
+    });
+  });
+
+  it("keeps legal and critical-client draft reviews on an urgent SLA", () => {
+    const highRiskItems = demoReviewQueue.filter((item) =>
+      ["critical-client", "legal-risk"].includes(item.reason),
+    );
+
+    expect(highRiskItems.length).toBeGreaterThan(0);
+    highRiskItems.forEach((item) => {
+      expect(item.reviewSlaHours).toBeLessThanOrEqual(4);
+    });
+  });
+
   it("only references existing emails", () => {
     demoReviewQueue.forEach((item) => {
       expect(emailsById.has(item.emailId)).toBe(true);

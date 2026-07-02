@@ -276,6 +276,9 @@ function ReviewQueuePanel() {
                 <p className="mt-0.5 text-xs text-amber-700">
                   {REVIEW_REASON_LABELS[item.reason]} &middot; Auto-send blocked
                 </p>
+                <p className="mt-0.5 text-xs text-amber-700">
+                  Owner: {item.approvalOwner} &middot; SLA: {item.reviewSlaHours}h
+                </p>
               </div>
               <Badge label="Review" variant="high" />
             </div>
@@ -433,7 +436,7 @@ function EmailRow({ email }: { email: EmailThread }) {
                   id={`${email.id}-review-lock`}
                   className="mt-2 text-xs font-medium text-amber-700"
                 >
-                  Review before send: {reviewLock.reviewerAction}
+                  Review before send: {reviewLock.reviewerAction} &middot; Owner: {reviewLock.approvalOwner}
                 </p>
               )}
             </div>
@@ -535,7 +538,7 @@ function DraftPanel() {
               </div>
               {reviewLock && (
                 <p className="mt-2 text-[11px] font-medium text-amber-700">
-                  Review gate: {reviewLock.reviewerAction}
+                  Review gate: {reviewLock.reviewerAction} &middot; Owner: {reviewLock.approvalOwner}
                 </p>
               )}
             </div>
