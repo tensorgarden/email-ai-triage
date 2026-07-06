@@ -5,6 +5,7 @@ import type {
   DailyDigest,
   DashboardStats,
   ReviewQueueItem,
+  DraftApprovalSummary,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -779,6 +780,26 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     autoSendBlocked: true,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Draft approval summary — approval-first inbox posture
+// ---------------------------------------------------------------------------
+export const demoDraftApprovalSummary: DraftApprovalSummary = (() => {
+  const blockedEmailIds = new Set(
+    demoReviewQueue
+      .filter((item) => item.autoSendBlocked)
+      .map((item) => item.emailId),
+  );
+  const heldForHumanApproval = demoDrafts.filter((draft) =>
+    blockedEmailIds.has(draft.emailId),
+  ).length;
+
+  return {
+    totalDrafts: demoDrafts.length,
+    readyToSend: demoDrafts.length - heldForHumanApproval,
+    heldForHumanApproval,
+  };
+})();
 
 // ---------------------------------------------------------------------------
 // Daily Digest

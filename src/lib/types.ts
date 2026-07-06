@@ -86,5 +86,11 @@ export interface DashboardStats {
   criticalCount: number;
 }
 
+export interface DraftApprovalSummary {
+  totalDrafts: number;
+  readyToSend: number;
+  heldForHumanApproval: number;
+}
+
 export type SortKey = "receivedAt" | "priority" | "sender";
 export type SortDirection = "asc" | "desc";

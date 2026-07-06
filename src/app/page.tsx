@@ -8,6 +8,7 @@ import {
   demoDrafts,
   demoTasks,
   demoReviewQueue,
+  demoDraftApprovalSummary,
 } from "@/lib/demo-data";
 import type {
   EmailThread,
@@ -18,6 +19,7 @@ import type {
   DailyDigest,
   DashboardStats,
   ReviewQueueItem,
+  DraftApprovalSummary,
 } from "@/lib/types";
 
 // ─────────────────────── Inline UI Components ───────────────────────
@@ -179,7 +181,13 @@ function formatDueDate(iso: string | null): string {
 
 // ─────────────────────── Sections ───────────────────────
 
-function HeroStats({ stats }: { stats: DashboardStats }) {
+function HeroStats({
+  stats,
+  draftApprovalSummary,
+}: {
+  stats: DashboardStats;
+  draftApprovalSummary: DraftApprovalSummary;
+}) {
   return (
     <section className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-5">
       <StatCard label="Unread" value={stats.unread} sublabel="awaiting review" />
@@ -188,7 +196,11 @@ function HeroStats({ stats }: { stats: DashboardStats }) {
         value={stats.triaged}
         sublabel={`${stats.criticalCount} critical`}
       />
-      <StatCard label="Drafts Ready" value={stats.drafted} sublabel="AI-generated" />
+      <StatCard
+        label="Drafts Ready"
+        value={`${draftApprovalSummary.readyToSend}/${draftApprovalSummary.totalDrafts}`}
+        sublabel={`${draftApprovalSummary.heldForHumanApproval} held for approval`}
+      />
       <StatCard
         label="Tasks Extracted"
         value={stats.tasksExtracted}
@@ -488,9 +500,12 @@ function EmailRow({ email }: { email: EmailThread }) {
 function DraftPanel() {
   return (
     <Card>
-      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
-        AI Drafts Ready ({demoDrafts.length})
+      <h3 className="mb-1 text-sm font-semibold uppercase tracking-wide text-slate-500">
+        AI Drafts ({demoDraftApprovalSummary.totalDrafts})
       </h3>
+      <p className="mb-4 text-xs text-slate-500">
+        {demoDraftApprovalSummary.readyToSend} ready to send after review; {demoDraftApprovalSummary.heldForHumanApproval} held behind human approval gates.
+      </p>
       <div className="max-h-96 space-y-3 overflow-y-auto">
         {demoDrafts.map((draft) => {
           const email = demoEmails.find((e) => e.id === draft.emailId);
@@ -719,7 +734,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Stats row */}
-      <HeroStats stats={demoStats} />
+      <HeroStats stats={demoStats} draftApprovalSummary={demoDraftApprovalSummary} />
 
       {/* Main grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

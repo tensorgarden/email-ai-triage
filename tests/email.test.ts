@@ -6,6 +6,7 @@ import {
   demoDigest,
   demoStats,
   demoReviewQueue,
+  demoDraftApprovalSummary,
 } from "@/lib/demo-data";
 import type {
   TriageCategory,
@@ -297,6 +298,42 @@ describe("Human review queue", () => {
       expect(`${email?.subject} ${email?.body} ${email?.aiSummary}`).toMatch(
         /\b(GDPR|DSAR|solicitor|regulator|compliance|HIPAA)\b/i,
       );
+    });
+  });
+
+  it("counts review-locked drafts separately from ready-to-send drafts", () => {
+    const blockedEmailIds = new Set(
+      demoReviewQueue
+        .filter((item) => item.autoSendBlocked)
+        .map((item) => item.emailId),
+    );
+    const heldDrafts = demoDrafts.filter((draft) =>
+      blockedEmailIds.has(draft.emailId),
+    );
+
+    expect(heldDrafts.length).toBeGreaterThan(0);
+    expect(demoDraftApprovalSummary.totalDrafts).toBe(demoDrafts.length);
+    expect(demoDraftApprovalSummary.heldForHumanApproval).toBe(heldDrafts.length);
+    expect(demoDraftApprovalSummary.readyToSend).toBe(
+      demoDrafts.length - heldDrafts.length,
+    );
+  });
+
+  it("requires every held draft to expose evidence, owner, and reviewer action", () => {
+    const reviewItemsByEmailId = new Map(
+      demoReviewQueue.map((item) => [item.emailId, item]),
+    );
+    const heldDrafts = demoDrafts.filter((draft) =>
+      reviewItemsByEmailId.get(draft.emailId)?.autoSendBlocked,
+    );
+
+    expect(heldDrafts.length).toBeGreaterThan(0);
+    heldDrafts.forEach((draft) => {
+      const reviewItem = reviewItemsByEmailId.get(draft.emailId);
+      expect(reviewItem).toBeDefined();
+      expect(reviewItem?.evidenceQuotes.length).toBeGreaterThan(0);
+      expect(reviewItem?.approvalOwner.trim().length).toBeGreaterThan(3);
+      expect(reviewItem?.reviewerAction).toMatch(/\b(approve|confirm|verify)\b/i);
     });
   });
 });
