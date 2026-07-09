@@ -339,7 +339,55 @@ describe("Human review queue", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 9. Escalation readiness
+// 9. Draft commitment review gates
+// ---------------------------------------------------------------------------
+describe("Draft commitment review gates", () => {
+  const reviewLocksByEmailId = new Map(
+    demoReviewQueue
+      .filter((item) => item.autoSendBlocked)
+      .map((item) => [item.emailId, item]),
+  );
+  const emailsById = new Map(demoEmails.map((email) => [email.id, email]));
+
+  it("keeps incident, legal, and healthcare commitment drafts behind review locks", () => {
+    const sensitiveCommitmentSignals =
+      /(\bRCA\b|root cause|\bETA\b|\bDSAR\b|\bGDPR\b|solicitor|\bHIPAA\b|board meeting|compliance checklist)/i;
+    const sensitiveDrafts = demoDrafts.filter((draft) => {
+      const email = emailsById.get(draft.emailId);
+      const sourceText = `${email?.subject ?? ""} ${email?.body ?? ""} ${email?.aiSummary ?? ""} ${draft.body}`;
+
+      return sensitiveCommitmentSignals.test(sourceText);
+    });
+
+    expect(sensitiveDrafts.length).toBeGreaterThan(0);
+    sensitiveDrafts.forEach((draft) => {
+      const reviewLock = reviewLocksByEmailId.get(draft.emailId);
+
+      expect(reviewLock).toBeDefined();
+      expect(reviewLock?.autoSendBlocked).toBe(true);
+      expect(reviewLock?.evidenceQuotes.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("ties blocked commitment drafts to owned approval or verification steps", () => {
+    const blockedDrafts = demoDrafts.filter((draft) =>
+      reviewLocksByEmailId.has(draft.emailId),
+    );
+
+    expect(blockedDrafts.length).toBeGreaterThan(0);
+    blockedDrafts.forEach((draft) => {
+      const reviewLock = reviewLocksByEmailId.get(draft.emailId);
+      const releaseCopy = `${reviewLock?.reviewerAction ?? ""} ${reviewLock?.verificationChecklist.join(" ") ?? ""}`;
+
+      expect(releaseCopy).toMatch(/\b(approve|approval|verify|confirm)\b/i);
+      expect(reviewLock?.approvalOwner.trim().length).toBeGreaterThan(3);
+      expect(reviewLock?.reviewSlaHours).toBeGreaterThan(0);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 10. Escalation readiness
 // ---------------------------------------------------------------------------
 describe("Escalation readiness", () => {
   it("critical client emails preserve deadline or exposure signals in summaries", () => {
