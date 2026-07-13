@@ -573,7 +573,16 @@ Domain Services Team`,
     confidence: 0.97,
     isRead: false,
     aiSummary:
-      "Phishing attempt disguised as domain expiry notice. Flagged as spam by content analysis. No legitimate domain referenced.",
+      "Phishing and hidden prompt-injection attempt quarantined. No legitimate domain referenced and no AI action allowed.",
+    securityFindings: [
+      {
+        type: "prompt-injection",
+        location: "hidden-body-text",
+        disposition: "quarantine",
+        detail:
+          "Scanner detected hidden AI-targeted instructions attempting to override triage policy and redirect extracted information.",
+      },
+    ],
     draftResponse: null,
     extractedTasks: [],
   },

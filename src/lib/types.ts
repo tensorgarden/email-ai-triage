@@ -10,6 +10,13 @@ export type PriorityLevel = "critical" | "high" | "medium" | "low";
 
 export type ReviewReason = "low-confidence" | "critical-client" | "legal-risk";
 
+export interface EmailSecurityFinding {
+  type: "prompt-injection";
+  location: "hidden-body-text";
+  disposition: "quarantine";
+  detail: string;
+}
+
 export interface EmailThread {
   id: string;
   subject: string;
@@ -27,6 +34,8 @@ export interface EmailThread {
   confidence: number;
   isRead: boolean;
   aiSummary: string;
+  /** Scanner findings that must be resolved before AI-generated actions are trusted. */
+  securityFindings?: EmailSecurityFinding[];
   draftResponse: DraftResponse | null;
   extractedTasks: AdminTask[];
 }

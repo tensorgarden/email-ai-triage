@@ -425,3 +425,33 @@ describe("Escalation readiness", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 11. Prompt-injection quarantine
+// ---------------------------------------------------------------------------
+describe("Prompt-injection quarantine", () => {
+  const injectionFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? [])
+      .filter((finding) => finding.type === "prompt-injection")
+      .map((finding) => ({ email, finding })),
+  );
+
+  it("quarantines detected prompt injection before AI actions are created", () => {
+    expect(injectionFindings.length).toBeGreaterThan(0);
+
+    injectionFindings.forEach(({ email, finding }) => {
+      expect(finding.disposition).toBe("quarantine");
+      expect(finding.location).toBe("hidden-body-text");
+      expect(email.category).toBe("spam");
+      expect(email.draftResponse).toBeNull();
+      expect(email.extractedTasks).toHaveLength(0);
+    });
+  });
+
+  it("makes the quarantine reason visible in the AI summary", () => {
+    injectionFindings.forEach(({ email, finding }) => {
+      expect(finding.detail.trim().length).toBeGreaterThan(20);
+      expect(email.aiSummary).toMatch(/prompt-injection.*quarantined/i);
+    });
+  });
+});
