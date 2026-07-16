@@ -448,6 +448,13 @@ describe("Prompt-injection quarantine", () => {
     });
   });
 
+  it("blocks quarantined content at ingress before model context assembly", () => {
+    injectionFindings.forEach(({ finding }) => {
+      expect(finding.controlPoint).toBe("email-ingress");
+      expect(finding.modelContextAccess).toBe("blocked");
+    });
+  });
+
   it("makes the quarantine reason visible in the AI summary", () => {
     injectionFindings.forEach(({ email, finding }) => {
       expect(finding.detail.trim().length).toBeGreaterThan(20);

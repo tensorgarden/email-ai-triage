@@ -419,7 +419,7 @@ function EmailRow({ email }: { email: EmailThread }) {
                 {finding.detail}
               </p>
               <p className="mt-1 text-[11px] text-red-600">
-                Location: hidden body text · Drafting and task extraction disabled
+                Control point: email ingress · Model context blocked · Drafting and task extraction disabled
               </p>
             </div>
           ))}

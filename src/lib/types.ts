@@ -14,6 +14,10 @@ export interface EmailSecurityFinding {
   type: "prompt-injection";
   location: "hidden-body-text";
   disposition: "quarantine";
+  /** Earliest enforced boundary for isolating untrusted email instructions. */
+  controlPoint: "email-ingress";
+  /** Whether quarantined content may be assembled into an AI assistant's context. */
+  modelContextAccess: "blocked";
   detail: string;
 }
 

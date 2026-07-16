@@ -579,6 +579,8 @@ Domain Services Team`,
         type: "prompt-injection",
         location: "hidden-body-text",
         disposition: "quarantine",
+        controlPoint: "email-ingress",
+        modelContextAccess: "blocked",
         detail:
           "Scanner detected hidden AI-targeted instructions attempting to override triage policy and redirect extracted information.",
       },
