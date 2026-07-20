@@ -148,6 +148,7 @@ const REVIEW_REASON_LABELS: Record<ReviewQueueItem["reason"], string> = {
   "low-confidence": "Low confidence",
   "critical-client": "Critical client",
   "legal-risk": "Legal risk",
+  "financial-risk": "Financial risk",
 };
 
 const REVIEW_LOCKS_BY_EMAIL_ID = new Map(

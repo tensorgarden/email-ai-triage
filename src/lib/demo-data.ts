@@ -790,6 +790,44 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     ],
     autoSendBlocked: true,
   },
+  {
+    id: "rq-005",
+    emailId: "e-005",
+    reason: "financial-risk",
+    reviewerAction: "Finance operations must verify payment status before sending",
+    riskNote:
+      "The draft claims payment was initiated and adds transaction evidence that is not present in the source email.",
+    evidenceQuotes: [
+      "invoice #INV-2025-04-012 in the amount of $14,200.00 remains unpaid and is now 15 days past due.",
+      "Payment can be made via ACH or wire transfer. Banking details are attached.",
+    ],
+    approvalOwner: "Finance operations lead",
+    reviewSlaHours: 4,
+    verificationChecklist: [
+      "Verify the vendor, amount, and banking instructions against the vendor record or another trusted channel.",
+      "Confirm payment status and the transaction reference in the finance system before approving the draft.",
+    ],
+    autoSendBlocked: true,
+  },
+  {
+    id: "rq-006",
+    emailId: "e-006",
+    reason: "financial-risk",
+    reviewerAction: "Accounts payable must confirm approval and routing before sending",
+    riskNote:
+      "The draft claims invoice approval and AP forwarding before those actions are verified in a finance system.",
+    evidenceQuotes: [
+      "Amount: $3,800.00",
+      "Could you approve and forward to AP for processing?",
+    ],
+    approvalOwner: "Accounts payable owner",
+    reviewSlaHours: 8,
+    verificationChecklist: [
+      "Verify the sender, invoice amount, and purchase order against the vendor record before approval.",
+      "Confirm AP routing and approval in the finance system before approving the draft.",
+    ],
+    autoSendBlocked: true,
+  },
 ];
 
 // ---------------------------------------------------------------------------

@@ -8,7 +8,11 @@ export type TriageCategory =
 
 export type PriorityLevel = "critical" | "high" | "medium" | "low";
 
-export type ReviewReason = "low-confidence" | "critical-client" | "legal-risk";
+export type ReviewReason =
+  | "low-confidence"
+  | "critical-client"
+  | "legal-risk"
+  | "financial-risk";
 
 export interface EmailSecurityFinding {
   type: "prompt-injection";

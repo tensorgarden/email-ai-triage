@@ -462,3 +462,49 @@ describe("Prompt-injection quarantine", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 12. Financial commitment review gates
+// ---------------------------------------------------------------------------
+describe("Financial commitment review gates", () => {
+  const emailsById = new Map(demoEmails.map((email) => [email.id, email]));
+  const reviewLocksByEmailId = new Map(
+    demoReviewQueue
+      .filter((item) => item.autoSendBlocked)
+      .map((item) => [item.emailId, item]),
+  );
+
+  it("holds invoice drafts that claim payment, approval, or forwarding actions", () => {
+    const financialCommitmentDrafts = demoDrafts.filter((draft) => {
+      const sourceEmail = emailsById.get(draft.emailId);
+      return (
+        sourceEmail?.category === "invoice" &&
+        /\b(payment|approved|forwarded)\b/i.test(draft.body)
+      );
+    });
+
+    expect(financialCommitmentDrafts.length).toBeGreaterThanOrEqual(2);
+    financialCommitmentDrafts.forEach((draft) => {
+      const reviewLock = reviewLocksByEmailId.get(draft.emailId);
+      expect(reviewLock?.reason).toBe("financial-risk");
+      expect(reviewLock?.autoSendBlocked).toBe(true);
+      expect(reviewLock?.approvalOwner.trim().length).toBeGreaterThan(3);
+    });
+  });
+
+  it("requires trusted finance evidence before releasing financial drafts", () => {
+    const financialReviewLocks = demoReviewQueue.filter(
+      (item) => item.reason === "financial-risk",
+    );
+
+    expect(financialReviewLocks.length).toBeGreaterThanOrEqual(2);
+    financialReviewLocks.forEach((item) => {
+      const checklistText = item.verificationChecklist.join(" ");
+      expect(item.evidenceQuotes.length).toBeGreaterThan(0);
+      expect(checklistText).toMatch(/\b(verify|confirm)\b/i);
+      expect(checklistText).toMatch(
+        /\b(vendor record|trusted channel|finance system|purchase order)\b/i,
+      );
+    });
+  });
+});
