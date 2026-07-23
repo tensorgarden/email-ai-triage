@@ -579,6 +579,8 @@ Domain Services Team`,
         type: "prompt-injection",
         location: "hidden-body-text",
         disposition: "quarantine",
+        verdict: "high-confidence-phish",
+        detectionTechnology: "prompt-injection-protection",
         controlPoint: "email-ingress",
         modelContextAccess: "blocked",
         detail:

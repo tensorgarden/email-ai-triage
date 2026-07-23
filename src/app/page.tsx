@@ -416,6 +416,10 @@ function EmailRow({ email }: { email: EmailThread }) {
               <p className="text-xs font-semibold uppercase tracking-wide text-red-700">
                 Prompt injection detected · Quarantined
               </p>
+              <p className="mt-1 text-[11px] font-medium text-red-700">
+                Verdict: {finding.verdict.replaceAll("-", " ")} · Detection:{" "}
+                {finding.detectionTechnology.replaceAll("-", " ")}
+              </p>
               <p className="mt-1 text-xs leading-relaxed text-red-700">
                 {finding.detail}
               </p>

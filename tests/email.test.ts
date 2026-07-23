@@ -508,3 +508,25 @@ describe("Financial commitment review gates", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 13. Prompt-injection analyst triage metadata
+// ---------------------------------------------------------------------------
+describe("Prompt-injection analyst triage metadata", () => {
+  const injectionFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? []).filter(
+      (finding) => finding.type === "prompt-injection",
+    ),
+  );
+
+  it("records the phishing verdict and detection technology for every finding", () => {
+    expect(injectionFindings.length).toBeGreaterThan(0);
+
+    injectionFindings.forEach((finding) => {
+      expect(finding.verdict).toBe("high-confidence-phish");
+      expect(finding.detectionTechnology).toBe(
+        "prompt-injection-protection",
+      );
+    });
+  });
+});

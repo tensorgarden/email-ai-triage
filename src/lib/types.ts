@@ -18,6 +18,10 @@ export interface EmailSecurityFinding {
   type: "prompt-injection";
   location: "hidden-body-text";
   disposition: "quarantine";
+  /** Mail-security verdict retained for analyst triage. */
+  verdict: "high-confidence-phish";
+  /** Scanner technology that produced the verdict. */
+  detectionTechnology: "prompt-injection-protection";
   /** Earliest enforced boundary for isolating untrusted email instructions. */
   controlPoint: "email-ingress";
   /** Whether quarantined content may be assembled into an AI assistant's context. */
