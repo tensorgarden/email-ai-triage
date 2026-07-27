@@ -530,3 +530,28 @@ describe("Prompt-injection analyst triage metadata", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 14. Prompt-injection defense-in-depth containment
+// ---------------------------------------------------------------------------
+describe("Prompt-injection defense-in-depth containment", () => {
+  const injectionFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? []).filter(
+      (finding) => finding.type === "prompt-injection",
+    ),
+  );
+
+  it("marks quarantined findings for information-flow isolation", () => {
+    expect(injectionFindings.length).toBeGreaterThan(0);
+
+    injectionFindings.forEach((finding) => {
+      expect(finding.isolationPolicy).toBe("information-flow-control");
+    });
+  });
+
+  it("blocks downstream tool access for isolated email content", () => {
+    injectionFindings.forEach((finding) => {
+      expect(finding.downstreamToolAccess).toBe("blocked");
+    });
+  });
+});

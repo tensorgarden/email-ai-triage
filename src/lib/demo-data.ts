@@ -583,6 +583,8 @@ Domain Services Team`,
         detectionTechnology: "prompt-injection-protection",
         controlPoint: "email-ingress",
         modelContextAccess: "blocked",
+        isolationPolicy: "information-flow-control",
+        downstreamToolAccess: "blocked",
         detail:
           "Scanner detected hidden AI-targeted instructions attempting to override triage policy and redirect extracted information.",
       },

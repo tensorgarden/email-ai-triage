@@ -26,6 +26,10 @@ export interface EmailSecurityFinding {
   controlPoint: "email-ingress";
   /** Whether quarantined content may be assembled into an AI assistant's context. */
   modelContextAccess: "blocked";
+  /** Policy layer that keeps untrusted content separated from critical inference. */
+  isolationPolicy: "information-flow-control";
+  /** Whether isolated content may trigger connected tools or external actions. */
+  downstreamToolAccess: "blocked";
   detail: string;
 }
 
