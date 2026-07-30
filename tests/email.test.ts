@@ -555,3 +555,29 @@ describe("Prompt-injection defense-in-depth containment", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 15. Independent financial verification status
+// ---------------------------------------------------------------------------
+describe("Financial review verification status", () => {
+  const financialReviewLocks = demoReviewQueue.filter(
+    (item) => item.reason === "financial-risk",
+  );
+
+  it("keeps financial drafts blocked while trusted-channel verification is pending", () => {
+    expect(financialReviewLocks.length).toBeGreaterThanOrEqual(2);
+
+    financialReviewLocks.forEach((item) => {
+      expect(item.financialVerification).toBeDefined();
+      expect(item.financialVerification?.trustedChannelStatus).toBe("pending");
+      expect(item.autoSendBlocked).toBe(true);
+    });
+  });
+
+  it("requires finance-system confirmation before generated claims can be released", () => {
+    financialReviewLocks.forEach((item) => {
+      expect(item.financialVerification?.financeSystemStatus).toBe("pending");
+      expect(item.financialVerification?.generatedClaimsAllowed).toBe(false);
+    });
+  });
+});

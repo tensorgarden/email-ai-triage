@@ -811,6 +811,11 @@ export const demoReviewQueue: ReviewQueueItem[] = [
       "Verify the vendor, amount, and banking instructions against the vendor record or another trusted channel.",
       "Confirm payment status and the transaction reference in the finance system before approving the draft.",
     ],
+    financialVerification: {
+      trustedChannelStatus: "pending",
+      financeSystemStatus: "pending",
+      generatedClaimsAllowed: false,
+    },
     autoSendBlocked: true,
   },
   {
@@ -830,6 +835,11 @@ export const demoReviewQueue: ReviewQueueItem[] = [
       "Verify the sender, invoice amount, and purchase order against the vendor record before approval.",
       "Confirm AP routing and approval in the finance system before approving the draft.",
     ],
+    financialVerification: {
+      trustedChannelStatus: "pending",
+      financeSystemStatus: "pending",
+      generatedClaimsAllowed: false,
+    },
     autoSendBlocked: true,
   },
 ];

@@ -74,6 +74,15 @@ export interface AdminTask {
   sourceQuote: string; // relevant snippet from the email
 }
 
+export interface FinancialVerificationStatus {
+  /** Independent callback or secondary-channel verification of the payment request. */
+  trustedChannelStatus: "pending" | "verified";
+  /** Confirmation from the authoritative accounting or payment system. */
+  financeSystemStatus: "pending" | "verified";
+  /** Generated payment or approval claims stay blocked until both checks pass. */
+  generatedClaimsAllowed: boolean;
+}
+
 export interface ReviewQueueItem {
   id: string;
   emailId: string;
@@ -88,6 +97,8 @@ export interface ReviewQueueItem {
   reviewSlaHours: number;
   /** Concrete steps a human must complete before approving the AI classification or draft. */
   verificationChecklist: string[];
+  /** Explicit operational proof state for finance-related drafts. */
+  financialVerification?: FinancialVerificationStatus;
   autoSendBlocked: boolean;
 }
 
