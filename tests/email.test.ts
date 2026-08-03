@@ -580,4 +580,13 @@ describe("Financial review verification status", () => {
       expect(item.financialVerification?.generatedClaimsAllowed).toBe(false);
     });
   });
+
+  it("uses vendor-master contact details instead of the payment-request email", () => {
+    financialReviewLocks.forEach((item) => {
+      expect(item.financialVerification?.trustedChannelOrigin).toBe(
+        "vendor-master-record",
+      );
+      expect(item.financialVerification?.emailThreadContactAllowed).toBe(false);
+    });
+  });
 });

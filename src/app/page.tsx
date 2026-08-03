@@ -337,7 +337,7 @@ function ReviewQueuePanel() {
             )}
             {item.financialVerification && (
               <p className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs font-medium text-red-700">
-                Financial proof pending: verify through a trusted channel and confirm in the finance system before release.
+                Financial proof pending: call a vendor-master contact—not a number in this email—and confirm in the finance system before release.
               </p>
             )}
             <p className="mt-2 text-xs font-medium text-slate-700">

@@ -77,6 +77,10 @@ export interface AdminTask {
 export interface FinancialVerificationStatus {
   /** Independent callback or secondary-channel verification of the payment request. */
   trustedChannelStatus: "pending" | "verified";
+  /** Contact source must be independent of the potentially compromised email thread. */
+  trustedChannelOrigin: "vendor-master-record";
+  /** Never use phone numbers or links supplied by the payment-request email itself. */
+  emailThreadContactAllowed: false;
   /** Confirmation from the authoritative accounting or payment system. */
   financeSystemStatus: "pending" | "verified";
   /** Generated payment or approval claims stay blocked until both checks pass. */

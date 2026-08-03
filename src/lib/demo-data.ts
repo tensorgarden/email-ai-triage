@@ -813,6 +813,8 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     ],
     financialVerification: {
       trustedChannelStatus: "pending",
+      trustedChannelOrigin: "vendor-master-record",
+      emailThreadContactAllowed: false,
       financeSystemStatus: "pending",
       generatedClaimsAllowed: false,
     },
@@ -837,6 +839,8 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     ],
     financialVerification: {
       trustedChannelStatus: "pending",
+      trustedChannelOrigin: "vendor-master-record",
+      emailThreadContactAllowed: false,
       financeSystemStatus: "pending",
       generatedClaimsAllowed: false,
     },
