@@ -735,6 +735,7 @@ export const demoReviewQueue: ReviewQueueItem[] = [
       "Confirm incident details and revenue exposure match the source email.",
       "Verify the remediation ETA with the on-call engineering lead before approving the draft.",
     ],
+    draftExpirationHours: 2,
     autoSendBlocked: true,
   },
   {
@@ -754,6 +755,7 @@ export const demoReviewQueue: ReviewQueueItem[] = [
       "Confirm DSAR deadline, Article 15 reference, and solicitor escalation in the source email.",
       "Get compliance lead approval for any legal commitment before sending.",
     ],
+    draftExpirationHours: 3,
     autoSendBlocked: true,
   },
   {
@@ -773,6 +775,7 @@ export const demoReviewQueue: ReviewQueueItem[] = [
       "Confirm the healthcare compliance scope and board deadline against the source email.",
       "Have the account owner approve budget and timeline language before sending.",
     ],
+    draftExpirationHours: 24,
     autoSendBlocked: true,
   },
   {

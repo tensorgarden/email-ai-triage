@@ -590,3 +590,54 @@ describe("Financial review verification status", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 16. Draft expiration staleness gates
+// ---------------------------------------------------------------------------
+describe("Draft expiration staleness gates", () => {
+  const draftsByEmailId = new Map(demoDrafts.map((draft) => [draft.emailId, draft]));
+
+  it("assigns expiration windows to critical incident and legal-risk drafts", () => {
+    const criticalAndLegal = demoReviewQueue.filter((item) =>
+      ["critical-client", "legal-risk"].includes(item.reason),
+    );
+
+    expect(criticalAndLegal.length).toBeGreaterThanOrEqual(2);
+    criticalAndLegal.forEach((item) => {
+      expect(item.draftExpirationHours).toBeDefined();
+      expect(item.draftExpirationHours).toBeGreaterThan(0);
+      expect(item.draftExpirationHours).toBeLessThanOrEqual(24);
+    });
+  });
+
+  it("prevents stale drafts from auto-sending without explicit re-approval", () => {
+    const withExpiration = demoReviewQueue.filter(
+      (item) => item.draftExpirationHours !== undefined,
+    );
+
+    withExpiration.forEach((item) => {
+      const draft = draftsByEmailId.get(item.emailId);
+
+      if (draft) {
+        // Stale drafts remain blocked until operator re-approves after expiration window
+        expect(item.autoSendBlocked).toBe(true);
+        expect(item.draftExpirationHours).toBeGreaterThan(0);
+      }
+    });
+  });
+
+  it("uses short expiration windows for production-incident and legal responses", () => {
+    const criticalIncident = demoReviewQueue.find((item) => item.id === "rq-001");
+    const legalDsar = demoReviewQueue.find((item) => item.id === "rq-002");
+
+    expect(criticalIncident?.draftExpirationHours).toBe(2);
+    expect(legalDsar?.draftExpirationHours).toBe(3);
+  });
+
+  it("allows longer expiration windows for lower-urgency proposal drafts", () => {
+    const proposalDraft = demoReviewQueue.find((item) => item.id === "rq-003");
+
+    expect(proposalDraft?.draftExpirationHours).toBe(24);
+    expect(proposalDraft?.reason).toBe("low-confidence");
+  });
+});

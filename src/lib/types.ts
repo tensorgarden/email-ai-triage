@@ -103,6 +103,8 @@ export interface ReviewQueueItem {
   verificationChecklist: string[];
   /** Explicit operational proof state for finance-related drafts. */
   financialVerification?: FinancialVerificationStatus;
+  /** Maximum age in hours that a draft response can remain unapproved before it becomes stale and auto-send must be re-approved. */
+  draftExpirationHours?: number;
   autoSendBlocked: boolean;
 }
 
