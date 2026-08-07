@@ -166,6 +166,19 @@ This produces:
 
 ---
 
+## Screenshots
+
+| Section | Description |
+|---------|-------------|
+| ![Hero Stats](docs/screenshots/01-hero-stats.png) | Dashboard hero stats showing unread, triaged, drafts ready, tasks, and AI accuracy |
+| ![Category Breakdown & Digest](docs/screenshots/02-category-breakdown-digest.png) | Category breakdown and daily digest panels |
+| ![Human Review Queue](docs/screenshots/03-review-queue.png) | Human review queue with flagged emails and verification checklists |
+| ![Email List](docs/screenshots/04-email-list.png) | Email inbox with expandable threads and AI summaries |
+| ![Full Dashboard](docs/screenshots/05-full-dashboard.png) | Full dashboard overview with all sections |
+| ![Full Page](docs/screenshots/00-full-page.png) | Full-page portfolio demo screenshot |
+
+---
+
 ## Roadmap
 
 - [ ] Real AI provider integration (OpenAI / Anthropic) with streaming responses
