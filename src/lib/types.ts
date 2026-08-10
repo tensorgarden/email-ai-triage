@@ -134,5 +134,23 @@ export interface DraftApprovalSummary {
   heldForHumanApproval: number;
 }
 
+/** Confidence analysis to track false-positive risk and alert fatigue drivers. */
+export interface ConfidenceAnalysis {
+  /** Total emails analyzed in the time period. */
+  totalEmails: number;
+  /** Emails with confidence >= 0.90 (high confidence, lower false-positive risk). */
+  highConfidenceCount: number;
+  /** Emails with 0.80 <= confidence < 0.90 (borderline, requires human review to catch false positives). */
+  borderlineConfidenceCount: number;
+  /** Emails with confidence < 0.80 (low confidence, high false-positive risk, should be escalated). */
+  lowConfidenceCount: number;
+  /** Average confidence score across all emails (0-1). */
+  averageConfidence: number;
+  /** Confidence distribution by category to identify which triage categories most need model retraining. */
+  categoryAverageConfidence: Record<TriageCategory, number>;
+  /** Percentage of classifications below the 0.90 threshold that need analyst review. */
+  riskOfAlertFatiguePercentage: number;
+}
+
 export type SortKey = "receivedAt" | "priority" | "sender";
 export type SortDirection = "asc" | "desc";

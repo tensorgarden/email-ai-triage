@@ -7,6 +7,7 @@ import {
   demoStats,
   demoReviewQueue,
   demoDraftApprovalSummary,
+  demoConfidenceAnalysis,
 } from "@/lib/demo-data";
 import type {
   TriageCategory,
@@ -639,5 +640,63 @@ describe("Draft expiration staleness gates", () => {
 
     expect(proposalDraft?.draftExpirationHours).toBe(24);
     expect(proposalDraft?.reason).toBe("low-confidence");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 7. Confidence analysis — false-positive risk tracking
+// ---------------------------------------------------------------------------
+describe("Confidence analysis", () => {
+  it("totals high/borderline/low confidence counts correctly", () => {
+    const { highConfidenceCount, borderlineConfidenceCount, lowConfidenceCount, totalEmails } =
+      demoConfidenceAnalysis;
+    expect(highConfidenceCount + borderlineConfidenceCount + lowConfidenceCount).toBe(
+      totalEmails,
+    );
+  });
+
+  it("identifies borderline confidence emails (0.80–0.89) that warrant human review", () => {
+    const borderlineEmails = demoEmails.filter(
+      (e) => e.confidence >= 0.8 && e.confidence < 0.9,
+    );
+    expect(demoConfidenceAnalysis.borderlineConfidenceCount).toBe(borderlineEmails.length);
+  });
+
+  it("calculates average confidence within expected range (0–1)", () => {
+    const { averageConfidence } = demoConfidenceAnalysis;
+    expect(averageConfidence).toBeGreaterThan(0);
+    expect(averageConfidence).toBeLessThanOrEqual(1);
+  });
+
+  it("computes per-category average confidence correctly", () => {
+    const { categoryAverageConfidence } = demoConfidenceAnalysis;
+    for (const category of Object.keys(categoryAverageConfidence)) {
+      const categoryEmails = demoEmails.filter((e) => e.category === category);
+      if (categoryEmails.length > 0) {
+        const expectedAvg =
+          Math.round(
+            (categoryEmails.reduce((sum, e) => sum + e.confidence, 0) / categoryEmails.length) *
+              10000,
+          ) / 10000;
+        expect(categoryAverageConfidence[category as TriageCategory]).toBe(expectedAvg);
+      }
+    }
+  });
+
+  it("calculates alert-fatigue risk percentage (emails below 0.90 confidence)", () => {
+    const { riskOfAlertFatiguePercentage, totalEmails, borderlineConfidenceCount, lowConfidenceCount } =
+      demoConfidenceAnalysis;
+    const expectedPercentage = Math.round(
+      ((borderlineConfidenceCount + lowConfidenceCount) / totalEmails) * 100,
+    );
+    expect(riskOfAlertFatiguePercentage).toBe(expectedPercentage);
+  });
+
+  it("shows all 6 categories in confidence distribution", () => {
+    const { categoryAverageConfidence } = demoConfidenceAnalysis;
+    const categories = ["urgent-client", "proposal-request", "invoice", "meeting-follow-up", "spam", "internal"];
+    categories.forEach((cat) => {
+      expect(categoryAverageConfidence).toHaveProperty(cat);
+    });
   });
 });

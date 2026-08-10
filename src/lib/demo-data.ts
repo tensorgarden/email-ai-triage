@@ -6,6 +6,8 @@ import type {
   DashboardStats,
   ReviewQueueItem,
   DraftApprovalSummary,
+  ConfidenceAnalysis,
+  TriageCategory,
 } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -909,3 +911,56 @@ export const demoStats: DashboardStats = {
   tasksExtracted: demoTasks.length,
   criticalCount: demoEmails.filter((e) => e.priority === "critical").length,
 };
+
+// ---------------------------------------------------------------------------
+// Confidence Analysis — Track false-positive risk and alert fatigue drivers
+// ---------------------------------------------------------------------------
+export const demoConfidenceAnalysis: ConfidenceAnalysis = (() => {
+  const highConfidence = demoEmails.filter((e) => e.confidence >= 0.9).length;
+  const borderlineConfidence = demoEmails.filter(
+    (e) => e.confidence >= 0.8 && e.confidence < 0.9,
+  ).length;
+  const lowConfidence = demoEmails.filter((e) => e.confidence < 0.8).length;
+
+  const avgConfidence =
+    demoEmails.reduce((sum, e) => sum + e.confidence, 0) / demoEmails.length;
+
+  // Compute average confidence per category
+  const categoryStats: Record<string, { sum: number; count: number }> = {};
+  for (const e of demoEmails) {
+    if (!categoryStats[e.category]) {
+      categoryStats[e.category] = { sum: 0, count: 0 };
+    }
+    categoryStats[e.category].sum += e.confidence;
+    categoryStats[e.category].count += 1;
+  }
+
+  const categoryAverageConfidence: Record<TriageCategory, number> = {} as Record<
+    TriageCategory,
+    number
+  >;
+  for (const category of [
+    "urgent-client",
+    "proposal-request",
+    "invoice",
+    "meeting-follow-up",
+    "spam",
+    "internal",
+  ] as const) {
+    const stats = categoryStats[category];
+    categoryAverageConfidence[category] = stats ? stats.sum / stats.count : 0;
+  }
+
+  const riskOfAlertFatiguePercentage =
+    Math.round(((borderlineConfidence + lowConfidence) / demoEmails.length) * 100);
+
+  return {
+    totalEmails: demoEmails.length,
+    highConfidenceCount: highConfidence,
+    borderlineConfidenceCount: borderlineConfidence,
+    lowConfidenceCount: lowConfidence,
+    averageConfidence: Math.round(avgConfidence * 10000) / 10000,
+    categoryAverageConfidence,
+    riskOfAlertFatiguePercentage,
+  };
+})();
