@@ -18,8 +18,8 @@ import type {
 // 1. Data volume
 // ---------------------------------------------------------------------------
 describe("Demo data", () => {
-  it("contains exactly 12 email threads", () => {
-    expect(demoEmails).toHaveLength(12);
+  it("contains exactly 13 email threads", () => {
+    expect(demoEmails).toHaveLength(13);
   });
 
   it("covers all 6 triage categories at least once", () => {
@@ -697,6 +697,68 @@ describe("Confidence analysis", () => {
     const categories = ["urgent-client", "proposal-request", "invoice", "meeting-follow-up", "spam", "internal"];
     categories.forEach((cat) => {
       expect(categoryAverageConfidence).toHaveProperty(cat);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 18. Display-name spoofing detection (executive impersonation)
+// ---------------------------------------------------------------------------
+describe("Display-name spoofing detection", () => {
+  const spoofFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? []).flatMap((finding) =>
+      finding.type === "display-name-spoofing" ? [{ email, finding }] : [],
+    ),
+  );
+
+  it("flags senders whose display name matches an executive but whose domain is unregistered", () => {
+    expect(spoofFindings.length).toBeGreaterThan(0);
+
+    spoofFindings.forEach(({ finding }) => {
+      expect(finding.verdict).toBe("display-name-domain-mismatch");
+      expect(finding.location).toBe("sender-identity");
+      expect(finding.claimedIdentity.trim().length).toBeGreaterThan(10);
+      expect(finding.senderDomain).not.toBe(finding.expectedDomain);
+    });
+  });
+
+  it("surfaces spoofed senders for human review instead of auto-quarantining them", () => {
+    spoofFindings.forEach(({ finding }) => {
+      expect(finding.disposition).toBe("review");
+      expect(finding.detectionTechnology).toBe("display-name-reputation-check");
+    });
+  });
+
+  it("keeps spoofed-sender content out of model context and tool access", () => {
+    spoofFindings.forEach(({ finding }) => {
+      expect(finding.controlPoint).toBe("email-ingress");
+      expect(finding.modelContextAccess).toBe("blocked");
+      expect(finding.isolationPolicy).toBe("information-flow-control");
+      expect(finding.downstreamToolAccess).toBe("blocked");
+    });
+  });
+
+  it("generates no draft or tasks from a flagged impersonation email", () => {
+    spoofFindings.forEach(({ email }) => {
+      expect(email.draftResponse).toBeNull();
+      expect(email.extractedTasks).toHaveLength(0);
+    });
+  });
+
+  it("holds impersonation wire-change requests behind a financial-risk review lock", () => {
+    const spoofedEmailIds = new Set(spoofFindings.map(({ email }) => email.id));
+    const reviewLocks = demoReviewQueue.filter(
+      (item) =>
+        spoofedEmailIds.has(item.emailId) && item.reason === "financial-risk",
+    );
+
+    expect(reviewLocks.length).toBeGreaterThan(0);
+    reviewLocks.forEach((lock) => {
+      expect(lock.autoSendBlocked).toBe(true);
+      expect(lock.financialVerification?.trustedChannelStatus).toBe("pending");
+      expect(lock.financialVerification?.emailThreadContactAllowed).toBe(false);
+      const checklistText = lock.verificationChecklist.join(" ");
+      expect(checklistText).toMatch(/\b(sender identity|independent callback)\b/i);
     });
   });
 });

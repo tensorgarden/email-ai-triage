@@ -19,7 +19,7 @@ function ago(hours: number, minutes = 0): string {
 }
 
 // ---------------------------------------------------------------------------
-// Emails — 12 threads covering all 6 categories
+// Emails — 13 threads covering all 6 categories
 // ---------------------------------------------------------------------------
 export const demoEmails: EmailThread[] = [
   // ---- URGENT-CLIENT (2) ----
@@ -282,7 +282,7 @@ Alex`,
     ],
   },
 
-  // ---- INVOICE (2) ----
+  // ---- INVOICE (3) ----
   {
     id: "e-005",
     subject: "Invoice #INV-2025-04-012 — Payment reminder",
@@ -390,6 +390,55 @@ Alex`,
           "Could you approve and forward to AP for processing?",
       },
     ],
+  },
+  {
+    id: "e-013",
+    subject: "Urgent: updated wire instructions for INV-2025-04-012",
+    sender: {
+      name: "Dana Whitfield",
+      email: "dana.whitfield@cloudops-billing.com",
+      avatarInitials: "DW",
+    },
+    preview:
+      "Alex, please route the outstanding balance on INV-2025-04-012 to our updated bank account. I've attached the new wire details...",
+    body: `Alex,
+
+We are reconciling our March cloud infrastructure invoices and noticed INV-2025-04-012 is still showing as unpaid on our side.
+
+Please route the remaining balance to our updated bank account. I've attached the new wire details. Our auditor has asked for a clean ledger by Friday, so confirming the transfer today would help enormously.
+
+This is confidential until the audit closes, please do not copy our billing team.
+
+Regards,
+Dana Whitfield
+Chief Financial Officer, CloudOps`,
+    receivedAt: ago(0, 45),
+    category: "invoice",
+    priority: "high",
+    confidence: 0.93,
+    isRead: false,
+    aiSummary:
+      "Wire-transfer change request for the CloudOps invoice balance. Sender identity flagged: display name matches a CloudOps executive, but the sender domain is not the registered CloudOps domain. No draft or tasks generated.",
+    securityFindings: [
+      {
+        type: "display-name-spoofing",
+        location: "sender-identity",
+        disposition: "review",
+        verdict: "display-name-domain-mismatch",
+        detectionTechnology: "display-name-reputation-check",
+        controlPoint: "email-ingress",
+        modelContextAccess: "blocked",
+        isolationPolicy: "information-flow-control",
+        downstreamToolAccess: "blocked",
+        claimedIdentity: "Dana Whitfield · Chief Financial Officer · CloudOps",
+        senderDomain: "cloudops-billing.com",
+        expectedDomain: "cloudops.net",
+        detail:
+          "Sender display name matches a registered CloudOps executive, but the sender domain is not listed in the identity directory for CloudOps. Payment-instruction changes from mismatched domains are routed for verification before any action.",
+      },
+    ],
+    draftResponse: null,
+    extractedTasks: [],
   },
 
   // ---- MEETING-FOLLOW-UP (2) ----
@@ -851,6 +900,32 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     },
     autoSendBlocked: true,
   },
+  {
+    id: "rq-007",
+    emailId: "e-013",
+    reason: "financial-risk",
+    reviewerAction: "Finance operations must verify sender identity before any payment action",
+    riskNote:
+      "Display name matches a CloudOps executive, but the sender domain is not the registered CloudOps domain. Wire-change requests from unmatched domains must be verified out-of-band before any payment action.",
+    evidenceQuotes: [
+      "Please route the remaining balance to our updated bank account.",
+      "This is confidential until the audit closes, please do not copy our billing team.",
+    ],
+    approvalOwner: "Finance operations lead",
+    reviewSlaHours: 1,
+    verificationChecklist: [
+      "Confirm the sender identity through the vendor-master record or an independent callback before acting on the wire change.",
+      "Verify the invoice balance and existing banking instructions in the finance system before approving any action.",
+    ],
+    financialVerification: {
+      trustedChannelStatus: "pending",
+      trustedChannelOrigin: "vendor-master-record",
+      emailThreadContactAllowed: false,
+      financeSystemStatus: "pending",
+      generatedClaimsAllowed: false,
+    },
+    autoSendBlocked: true,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -896,6 +971,7 @@ export const demoDigest: DailyDigest = (() => {
       "3 high-priority proposals drafted (BrightPath $180k RFP, Meridian Health dashboard, VirtuStream discovery)",
       "13 administrative tasks extracted from email threads — 10 with due dates",
       "2 phishing/spam emails filtered (domain scam, LinkedIn growth spam)",
+      "1 executive impersonation flagged — wire-change request held for identity verification",
       "92% of inbound emails triaged to correct category by AI classifier",
     ],
   };
@@ -948,7 +1024,9 @@ export const demoConfidenceAnalysis: ConfidenceAnalysis = (() => {
     "internal",
   ] as const) {
     const stats = categoryStats[category];
-    categoryAverageConfidence[category] = stats ? stats.sum / stats.count : 0;
+    categoryAverageConfidence[category] = stats
+      ? Math.round((stats.sum / stats.count) * 10000) / 10000
+      : 0;
   }
 
   const riskOfAlertFatiguePercentage =

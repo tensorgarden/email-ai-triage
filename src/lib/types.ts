@@ -14,7 +14,7 @@ export type ReviewReason =
   | "legal-risk"
   | "financial-risk";
 
-export interface EmailSecurityFinding {
+export interface PromptInjectionFinding {
   type: "prompt-injection";
   location: "hidden-body-text";
   disposition: "quarantine";
@@ -32,6 +32,37 @@ export interface EmailSecurityFinding {
   downstreamToolAccess: "blocked";
   detail: string;
 }
+
+export interface DisplayNameSpoofingFinding {
+  type: "display-name-spoofing";
+  /** Field where the identity mismatch was observed. */
+  location: "sender-identity";
+  /** Spoofed senders are surfaced for human review rather than auto-quarantined, because display-name matches can be false positives. */
+  disposition: "review";
+  /** Why the sender was flagged. */
+  verdict: "display-name-domain-mismatch";
+  /** Scanner technology that produced the verdict. */
+  detectionTechnology: "display-name-reputation-check";
+  /** Earliest enforced boundary for isolating untrusted sender context. */
+  controlPoint: "email-ingress";
+  /** Whether spoofed-sender content may be assembled into an AI assistant's context. */
+  modelContextAccess: "blocked";
+  /** Policy layer that keeps untrusted content separated from critical inference. */
+  isolationPolicy: "information-flow-control";
+  /** Whether spoofed-sender content may trigger connected tools or external actions. */
+  downstreamToolAccess: "blocked";
+  /** Identity the sender claims, including display name and role. */
+  claimedIdentity: string;
+  /** Domain the message was actually sent from. */
+  senderDomain: string;
+  /** Domain the identity directory associates with the claimed identity. */
+  expectedDomain: string;
+  detail: string;
+}
+
+export type EmailSecurityFinding =
+  | PromptInjectionFinding
+  | DisplayNameSpoofingFinding;
 
 export interface EmailThread {
   id: string;

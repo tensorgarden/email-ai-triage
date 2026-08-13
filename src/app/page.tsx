@@ -412,27 +412,52 @@ function EmailRow({ email }: { email: EmailThread }) {
           </div>
 
           {/* Security findings */}
-          {email.securityFindings?.map((finding) => (
-            <div
-              key={`${email.id}-${finding.type}`}
-              role="alert"
-              className="rounded-lg border border-red-200 bg-red-50 p-3"
-            >
-              <p className="text-xs font-semibold uppercase tracking-wide text-red-700">
-                Prompt injection detected · Quarantined
-              </p>
-              <p className="mt-1 text-[11px] font-medium text-red-700">
-                Verdict: {finding.verdict.replaceAll("-", " ")} · Detection:{" "}
-                {finding.detectionTechnology.replaceAll("-", " ")}
-              </p>
-              <p className="mt-1 text-xs leading-relaxed text-red-700">
-                {finding.detail}
-              </p>
-              <p className="mt-1 text-[11px] text-red-600">
-                Control point: email ingress · Model context blocked · Information-flow isolation · Downstream tools blocked
-              </p>
-            </div>
-          ))}
+          {email.securityFindings?.map((finding) =>
+            finding.type === "prompt-injection" ? (
+              <div
+                key={`${email.id}-${finding.type}`}
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 p-3"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide text-red-700">
+                  Prompt injection detected · Quarantined
+                </p>
+                <p className="mt-1 text-[11px] font-medium text-red-700">
+                  Verdict: {finding.verdict.replaceAll("-", " ")} · Detection:{" "}
+                  {finding.detectionTechnology.replaceAll("-", " ")}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-red-700">
+                  {finding.detail}
+                </p>
+                <p className="mt-1 text-[11px] text-red-600">
+                  Control point: email ingress · Model context blocked · Information-flow isolation · Downstream tools blocked
+                </p>
+              </div>
+            ) : (
+              <div
+                key={`${email.id}-${finding.type}`}
+                role="alert"
+                className="rounded-lg border border-amber-200 bg-amber-50 p-3"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+                  Possible executive impersonation · Identity verification required
+                </p>
+                <p className="mt-1 text-[11px] font-medium text-amber-700">
+                  Claimed: {finding.claimedIdentity}
+                </p>
+                <p className="mt-1 text-[11px] font-medium text-amber-700">
+                  Sender domain {finding.senderDomain} does not match expected{" "}
+                  {finding.expectedDomain}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-amber-700">
+                  {finding.detail}
+                </p>
+                <p className="mt-1 text-[11px] text-amber-600">
+                  Model context blocked · No draft or tasks generated · Routed to finance review
+                </p>
+              </div>
+            ),
+          )}
 
           {/* Draft response */}
           {email.draftResponse && (
