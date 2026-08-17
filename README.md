@@ -157,6 +157,7 @@ This produces:
 - The `ENABLE_REAL_OUTBOUND_ACTIONS` flag defaults to `false` — all "Send" buttons are no-ops in demo mode
 - AI provider defaults to `mock` — no external API calls are made without explicit configuration
 - Draft responses are clearly labelled "AI-Generated" to prevent accidental sending of un-reviewed content
+- Inbound security scanning models prompt-injection quarantine, display-name spoofing, and hijacked-thread detection — flagged messages block drafting, task extraction, and auto-send until a human reviews them
 
 ### Repository Hygiene
 - `.gitignore` excludes `.env`, `.env.local`, build artifacts (`.next/`), and generated files (`.generated/`)

@@ -433,6 +433,33 @@ function EmailRow({ email }: { email: EmailThread }) {
                   Control point: email ingress · Model context blocked · Information-flow isolation · Downstream tools blocked
                 </p>
               </div>
+            ) : finding.type === "thread-hijack" ? (
+              <div
+                key={`${email.id}-${finding.type}`}
+                role="alert"
+                className="rounded-lg border border-amber-200 bg-amber-50 p-3"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+                  Possible thread hijack · Reply-chain verification required
+                </p>
+                <p className="mt-1 text-[11px] font-medium text-amber-700">
+                  Verdict: {finding.verdict.replaceAll("-", " ")} · Detection:{" "}
+                  {finding.detectionTechnology.replaceAll("-", " ")}
+                </p>
+                <p className="mt-1 text-[11px] font-medium text-amber-700">
+                  Claimed thread: {finding.claimedThreadSubject}
+                </p>
+                <p className="mt-1 text-[11px] font-medium text-amber-700">
+                  Sender domain {finding.senderDomain} is not in this thread&apos;s
+                  participant history ({finding.knownParticipantDomains.join(", ")})
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-amber-700">
+                  {finding.detail}
+                </p>
+                <p className="mt-1 text-[11px] text-amber-600">
+                  Model context blocked · No draft or tasks generated · Routed to finance review
+                </p>
+              </div>
             ) : (
               <div
                 key={`${email.id}-${finding.type}`}

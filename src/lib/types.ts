@@ -60,9 +60,37 @@ export interface DisplayNameSpoofingFinding {
   detail: string;
 }
 
+export interface ThreadHijackFinding {
+  type: "thread-hijack";
+  /** Where the anomaly was observed. */
+  location: "conversation-thread";
+  /** Hijacked threads are surfaced for review, not auto-quarantined, because legitimate new participants can join existing threads. */
+  disposition: "review";
+  /** Why the message was flagged. */
+  verdict: "non-participant-thread-intrusion";
+  /** Scanner technology that produced the verdict. */
+  detectionTechnology: "thread-participant-history-check";
+  /** Earliest enforced boundary for isolating untrusted continuation content. */
+  controlPoint: "email-ingress";
+  /** Whether hijacked continuation content may be assembled into an AI assistant's context. */
+  modelContextAccess: "blocked";
+  /** Policy layer that keeps untrusted content separated from critical inference. */
+  isolationPolicy: "information-flow-control";
+  /** Whether hijacked-thread content may trigger connected tools or external actions. */
+  downstreamToolAccess: "blocked";
+  /** The existing conversation thread the message claims to continue. */
+  claimedThreadSubject: string;
+  /** Domains already established as participants in the thread history. */
+  knownParticipantDomains: string[];
+  /** The sender domain that is absent from the thread's participant history. */
+  senderDomain: string;
+  detail: string;
+}
+
 export type EmailSecurityFinding =
   | PromptInjectionFinding
-  | DisplayNameSpoofingFinding;
+  | DisplayNameSpoofingFinding
+  | ThreadHijackFinding;
 
 export interface EmailThread {
   id: string;

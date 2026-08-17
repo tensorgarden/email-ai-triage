@@ -19,7 +19,7 @@ function ago(hours: number, minutes = 0): string {
 }
 
 // ---------------------------------------------------------------------------
-// Emails — 13 threads covering all 6 categories
+// Emails — 14 threads covering all 6 categories
 // ---------------------------------------------------------------------------
 export const demoEmails: EmailThread[] = [
   // ---- URGENT-CLIENT (2) ----
@@ -435,6 +435,57 @@ Chief Financial Officer, CloudOps`,
         expectedDomain: "cloudops.net",
         detail:
           "Sender display name matches a registered CloudOps executive, but the sender domain is not listed in the identity directory for CloudOps. Payment-instruction changes from mismatched domains are routed for verification before any action.",
+      },
+    ],
+    draftResponse: null,
+    extractedTasks: [],
+  },
+  {
+    id: "e-014",
+    subject: "Re: Invoice #INV-2025-04-012 — Payment reminder",
+    sender: {
+      name: "CloudOps Remittance Desk",
+      email: "remittance@cloudops-net.com",
+      avatarInitials: "CR",
+    },
+    preview:
+      "Following up on our earlier payment reminders for INV-2025-04-012. Please use the updated banking details below for the remaining balance...",
+    body: `Following up on our earlier reminders about invoice #INV-2025-04-012 ($14,200.00).
+
+To avoid further late-payment interest, our collections desk has opened a new holding account for this invoice. Please remit the remaining balance using the updated details below. This replaces the banking details in our earlier reminders.
+
+Account name: CloudOps Infrastructure Services
+Bank: Meridian Commercial
+Account: 8845 2210 3390
+Routing: 021-000-021
+
+Please reply once the transfer is scheduled so we can close the file today.
+
+Regards,
+CloudOps Remittance Desk`,
+    receivedAt: ago(0, 30),
+    category: "invoice",
+    priority: "high",
+    confidence: 0.91,
+    isRead: false,
+    aiSummary:
+      "Hijacked-thread reply claiming updated payment details for the CloudOps invoice. The message presents as a continuation of an existing thread, but the sender domain is not part of that thread's participant history. No draft or tasks generated.",
+    securityFindings: [
+      {
+        type: "thread-hijack",
+        location: "conversation-thread",
+        disposition: "review",
+        verdict: "non-participant-thread-intrusion",
+        detectionTechnology: "thread-participant-history-check",
+        controlPoint: "email-ingress",
+        modelContextAccess: "blocked",
+        isolationPolicy: "information-flow-control",
+        downstreamToolAccess: "blocked",
+        claimedThreadSubject: "Invoice #INV-2025-04-012 — Payment reminder",
+        knownParticipantDomains: ["cloudops.net"],
+        senderDomain: "cloudops-net.com",
+        detail:
+          "The message claims to continue the INV-2025-04-012 payment thread, but the sender domain is not present in that thread's participant history. Payment-redirect replies from non-participants are held for out-of-band verification before any action.",
       },
     ],
     draftResponse: null,
@@ -926,6 +977,32 @@ export const demoReviewQueue: ReviewQueueItem[] = [
     },
     autoSendBlocked: true,
   },
+  {
+    id: "rq-008",
+    emailId: "e-014",
+    reason: "financial-risk",
+    reviewerAction: "Finance operations must verify thread participants before any payment action",
+    riskNote:
+      "The message hijacks an existing invoice thread to redirect payment. It carries the thread's social proof, but the sender domain is not part of the thread's participant history. Payment-redirect replies from non-participants must be verified out-of-band before any action.",
+    evidenceQuotes: [
+      "To avoid further late-payment interest, our collections desk has opened a new holding account for this invoice.",
+      "This replaces the banking details in our earlier reminders.",
+    ],
+    approvalOwner: "Finance operations lead",
+    reviewSlaHours: 1,
+    verificationChecklist: [
+      "Verify the sender identity and banking instructions against the vendor-master record or an independent callback before acting.",
+      "Confirm the thread's participant history and the invoice balance in the finance system before approving any action.",
+    ],
+    financialVerification: {
+      trustedChannelStatus: "pending",
+      trustedChannelOrigin: "vendor-master-record",
+      emailThreadContactAllowed: false,
+      financeSystemStatus: "pending",
+      generatedClaimsAllowed: false,
+    },
+    autoSendBlocked: true,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -972,6 +1049,7 @@ export const demoDigest: DailyDigest = (() => {
       "13 administrative tasks extracted from email threads — 10 with due dates",
       "2 phishing/spam emails filtered (domain scam, LinkedIn growth spam)",
       "1 executive impersonation flagged — wire-change request held for identity verification",
+      "1 hijacked invoice thread flagged — payment-redirect reply held for thread-participant verification",
       "92% of inbound emails triaged to correct category by AI classifier",
     ],
   };

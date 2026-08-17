@@ -18,8 +18,8 @@ import type {
 // 1. Data volume
 // ---------------------------------------------------------------------------
 describe("Demo data", () => {
-  it("contains exactly 13 email threads", () => {
-    expect(demoEmails).toHaveLength(13);
+  it("contains exactly 14 email threads", () => {
+    expect(demoEmails).toHaveLength(14);
   });
 
   it("covers all 6 triage categories at least once", () => {
@@ -759,6 +759,70 @@ describe("Display-name spoofing detection", () => {
       expect(lock.financialVerification?.emailThreadContactAllowed).toBe(false);
       const checklistText = lock.verificationChecklist.join(" ");
       expect(checklistText).toMatch(/\b(sender identity|independent callback)\b/i);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 19. Thread hijack detection (reply-chain intrusion)
+// ---------------------------------------------------------------------------
+describe("Thread hijack detection", () => {
+  const hijackFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? []).flatMap((finding) =>
+      finding.type === "thread-hijack" ? [{ email, finding }] : [],
+    ),
+  );
+
+  it("flags messages that claim an existing thread from a domain outside its participant history", () => {
+    expect(hijackFindings.length).toBeGreaterThan(0);
+
+    hijackFindings.forEach(({ finding }) => {
+      expect(finding.verdict).toBe("non-participant-thread-intrusion");
+      expect(finding.location).toBe("conversation-thread");
+      expect(finding.claimedThreadSubject.trim().length).toBeGreaterThan(0);
+      expect(finding.knownParticipantDomains).not.toContain(finding.senderDomain);
+    });
+  });
+
+  it("surfaces hijacked threads for human review instead of auto-quarantining them", () => {
+    hijackFindings.forEach(({ finding }) => {
+      expect(finding.disposition).toBe("review");
+      expect(finding.detectionTechnology).toBe("thread-participant-history-check");
+    });
+  });
+
+  it("keeps hijacked-thread content out of model context and tool access", () => {
+    hijackFindings.forEach(({ finding }) => {
+      expect(finding.controlPoint).toBe("email-ingress");
+      expect(finding.modelContextAccess).toBe("blocked");
+      expect(finding.isolationPolicy).toBe("information-flow-control");
+      expect(finding.downstreamToolAccess).toBe("blocked");
+    });
+  });
+
+  it("generates no draft or tasks from a hijacked-thread message", () => {
+    hijackFindings.forEach(({ email }) => {
+      expect(email.draftResponse).toBeNull();
+      expect(email.extractedTasks).toHaveLength(0);
+    });
+  });
+
+  it("holds hijacked payment-redirect replies behind a financial-risk review lock", () => {
+    const hijackedEmailIds = new Set(hijackFindings.map(({ email }) => email.id));
+    const reviewLocks = demoReviewQueue.filter(
+      (item) =>
+        hijackedEmailIds.has(item.emailId) && item.reason === "financial-risk",
+    );
+
+    expect(reviewLocks.length).toBeGreaterThan(0);
+    reviewLocks.forEach((lock) => {
+      expect(lock.autoSendBlocked).toBe(true);
+      expect(lock.financialVerification?.trustedChannelStatus).toBe("pending");
+      expect(lock.financialVerification?.emailThreadContactAllowed).toBe(false);
+      const checklistText = lock.verificationChecklist.join(" ");
+      expect(checklistText).toMatch(
+        /\b(thread participant|independent callback|vendor-master)\b/i,
+      );
     });
   });
 });
