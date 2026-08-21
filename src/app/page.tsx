@@ -336,9 +336,19 @@ function ReviewQueuePanel() {
               </div>
             )}
             {item.financialVerification && (
-              <p className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs font-medium text-red-700">
-                Financial proof pending: call a vendor-master contact—not a number in this email—and confirm in the finance system before release.
-              </p>
+              <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-2 text-xs font-medium text-red-700">
+                <p>
+                  Financial proof pending: call a vendor-master contact—not a number in this email—and confirm in the finance system before release.
+                </p>
+                {item.financialVerification.pressureSignals.length > 0 && (
+                  <p className="mt-1 font-semibold">
+                    Observed pressure cues:{" "}
+                    {item.financialVerification.pressureSignals
+                      .map((signal) => signal.replaceAll("-", " "))
+                      .join(" · ")}
+                  </p>
+                )}
+              </div>
             )}
             <p className="mt-2 text-xs font-medium text-slate-700">
               Next: {item.reviewerAction}

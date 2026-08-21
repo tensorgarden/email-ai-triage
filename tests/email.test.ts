@@ -826,3 +826,35 @@ describe("Thread hijack detection", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 20. Payment-request pressure cues
+// ---------------------------------------------------------------------------
+describe("Payment-request pressure cues", () => {
+  const pressureLocks = demoReviewQueue.filter(
+    (item) =>
+      item.reason === "financial-risk" &&
+      (item.financialVerification?.pressureSignals.length ?? 0) > 0,
+  );
+
+  it("preserves deadline and secrecy cues from high-risk payment requests", () => {
+    const wireChange = demoReviewQueue.find((item) => item.emailId === "e-013");
+    const hijackedReply = demoReviewQueue.find((item) => item.emailId === "e-014");
+
+    expect(wireChange?.financialVerification?.pressureSignals).toEqual(
+      expect.arrayContaining(["deadline-pressure", "secrecy-request"]),
+    );
+    expect(hijackedReply?.financialVerification?.pressureSignals).toContain(
+      "deadline-pressure",
+    );
+  });
+
+  it("keeps pressure-marked requests blocked instead of treating pressure as proof", () => {
+    expect(pressureLocks.length).toBeGreaterThan(0);
+
+    pressureLocks.forEach((item) => {
+      expect(item.autoSendBlocked).toBe(true);
+      expect(item.financialVerification?.generatedClaimsAllowed).toBe(false);
+    });
+  });
+});

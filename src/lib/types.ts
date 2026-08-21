@@ -133,6 +133,8 @@ export interface AdminTask {
   sourceQuote: string; // relevant snippet from the email
 }
 
+export type FinancialPressureSignal = "deadline-pressure" | "secrecy-request";
+
 export interface FinancialVerificationStatus {
   /** Independent callback or secondary-channel verification of the payment request. */
   trustedChannelStatus: "pending" | "verified";
@@ -144,6 +146,8 @@ export interface FinancialVerificationStatus {
   financeSystemStatus: "pending" | "verified";
   /** Generated payment or approval claims stay blocked until both checks pass. */
   generatedClaimsAllowed: boolean;
+  /** Social-engineering pressure cues preserved for analyst triage. */
+  pressureSignals: FinancialPressureSignal[];
 }
 
 export interface ReviewQueueItem {
