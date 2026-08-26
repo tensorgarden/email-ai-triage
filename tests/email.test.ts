@@ -858,3 +858,27 @@ describe("Payment-request pressure cues", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 21. Active content output containment
+// ---------------------------------------------------------------------------
+describe("Active content output containment", () => {
+  const securityFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? []).map((finding) => ({ email, finding })),
+  );
+
+  it("blocks active links and images from every untrusted email finding", () => {
+    expect(securityFindings.length).toBeGreaterThan(0);
+
+    securityFindings.forEach(({ finding }) => {
+      expect(finding.activeContentHandling).toBe("blocked");
+    });
+  });
+
+  it("keeps output containment paired with pre-model and tool boundaries", () => {
+    securityFindings.forEach(({ finding }) => {
+      expect(finding.modelContextAccess).toBe("blocked");
+      expect(finding.downstreamToolAccess).toBe("blocked");
+    });
+  });
+});

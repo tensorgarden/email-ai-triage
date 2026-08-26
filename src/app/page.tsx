@@ -440,7 +440,7 @@ function EmailRow({ email }: { email: EmailThread }) {
                   {finding.detail}
                 </p>
                 <p className="mt-1 text-[11px] text-red-600">
-                  Control point: email ingress · Model context blocked · Information-flow isolation · Downstream tools blocked
+                  Control point: email ingress · Model context blocked · Active links/images {finding.activeContentHandling} · Information-flow isolation · Downstream tools blocked
                 </p>
               </div>
             ) : finding.type === "thread-hijack" ? (
@@ -467,7 +467,7 @@ function EmailRow({ email }: { email: EmailThread }) {
                   {finding.detail}
                 </p>
                 <p className="mt-1 text-[11px] text-amber-600">
-                  Model context blocked · No draft or tasks generated · Routed to finance review
+                  Model context blocked · Active links/images {finding.activeContentHandling} · No draft or tasks generated · Routed to finance review
                 </p>
               </div>
             ) : (
@@ -490,7 +490,7 @@ function EmailRow({ email }: { email: EmailThread }) {
                   {finding.detail}
                 </p>
                 <p className="mt-1 text-[11px] text-amber-600">
-                  Model context blocked · No draft or tasks generated · Routed to finance review
+                  Model context blocked · Active links/images {finding.activeContentHandling} · No draft or tasks generated · Routed to finance review
                 </p>
               </div>
             ),

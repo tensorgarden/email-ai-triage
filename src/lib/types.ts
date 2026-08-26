@@ -30,6 +30,8 @@ export interface PromptInjectionFinding {
   isolationPolicy: "information-flow-control";
   /** Whether isolated content may trigger connected tools or external actions. */
   downstreamToolAccess: "blocked";
+  /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
+  activeContentHandling: "blocked";
   detail: string;
 }
 
@@ -51,6 +53,8 @@ export interface DisplayNameSpoofingFinding {
   isolationPolicy: "information-flow-control";
   /** Whether spoofed-sender content may trigger connected tools or external actions. */
   downstreamToolAccess: "blocked";
+  /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
+  activeContentHandling: "blocked";
   /** Identity the sender claims, including display name and role. */
   claimedIdentity: string;
   /** Domain the message was actually sent from. */
@@ -78,6 +82,8 @@ export interface ThreadHijackFinding {
   isolationPolicy: "information-flow-control";
   /** Whether hijacked-thread content may trigger connected tools or external actions. */
   downstreamToolAccess: "blocked";
+  /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
+  activeContentHandling: "blocked";
   /** The existing conversation thread the message claims to continue. */
   claimedThreadSubject: string;
   /** Domains already established as participants in the thread history. */

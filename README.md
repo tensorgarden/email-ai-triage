@@ -69,9 +69,9 @@ email-ai-triage/
 │   │   └── page.tsx             # Main dashboard (single page)
 │   └── lib/
 │       ├── types.ts             # TypeScript interfaces and type definitions
-│       └── demo-data.ts         # 12 fictional emails, drafts, tasks, digest
+│       └── demo-data.ts         # 14 fictional emails, drafts, tasks, digest
 ├── tests/
-│   └── email.test.ts            # 15 unit tests covering data integrity and logic
+│   └── email.test.ts            # 76 unit tests covering data integrity and logic
 ├── public/                      # Static assets
 └── ...config files              # Next, Tailwind, ESLint, Vitest, PostCSS
 ```
@@ -128,13 +128,13 @@ npm run build
 
 ## Demo Data
 
-The dashboard ships with **12 fictional but realistic email threads** across all six categories:
+The dashboard ships with **14 fictional but realistic email threads** across all six categories:
 
 | Category | Count | Examples |
 |----------|-------|----------|
 | Urgent Client | 2 | Production outage, GDPR DSAR deadline |
 | Proposal Request | 2 | $180k chatbot RFP, analytics dashboard scope |
-| Invoice | 2 | Payment reminder, Q2 retainer approval |
+| Invoice | 4 | Payment reminder, Q2 retainer approval, wire-change request, hijacked-thread reply |
 | Meeting Follow-up | 2 | Q3 roadmap actions, client kickoff summary |
 | Spam | 2 | LinkedIn growth scam, domain expiry phishing |
 | Internal | 2 | New starter onboarding, engineering survey |
@@ -142,7 +142,7 @@ The dashboard ships with **12 fictional but realistic email threads** across all
 This produces:
 - **7 AI-generated draft responses** across three tones
 - **13 extracted administrative tasks**, 10 with due dates
-- **1 daily digest** with 5 AI-generated highlights
+- **1 daily digest** with 7 AI-generated highlights
 
 ---
 
@@ -157,7 +157,7 @@ This produces:
 - The `ENABLE_REAL_OUTBOUND_ACTIONS` flag defaults to `false` — all "Send" buttons are no-ops in demo mode
 - AI provider defaults to `mock` — no external API calls are made without explicit configuration
 - Draft responses are clearly labelled "AI-Generated" to prevent accidental sending of un-reviewed content
-- Inbound security scanning models prompt-injection quarantine, display-name spoofing, and hijacked-thread detection — flagged messages block drafting, task extraction, and auto-send until a human reviews them
+- Inbound security scanning models prompt-injection quarantine, display-name spoofing, and hijacked-thread detection. Flagged messages block drafting, task extraction, active links/images, and auto-send until a human reviews them.
 
 ### Repository Hygiene
 - `.gitignore` excludes `.env`, `.env.local`, build artifacts (`.next/`), and generated files (`.generated/`)
