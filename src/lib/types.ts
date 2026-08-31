@@ -98,6 +98,16 @@ export type EmailSecurityFinding =
   | DisplayNameSpoofingFinding
   | ThreadHijackFinding;
 
+export function formatSecurityBoundary(finding: EmailSecurityFinding): string {
+  return [
+    `Control point: ${finding.controlPoint.replaceAll("-", " ")}`,
+    `Model context ${finding.modelContextAccess}`,
+    `Active links/images ${finding.activeContentHandling}`,
+    `Isolation: ${finding.isolationPolicy.replaceAll("-", " ")}`,
+    `Downstream tools ${finding.downstreamToolAccess}`,
+  ].join(" · ");
+}
+
 export interface EmailThread {
   id: string;
   subject: string;

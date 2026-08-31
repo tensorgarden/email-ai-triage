@@ -13,6 +13,7 @@ import type {
   TriageCategory,
   PriorityLevel,
 } from "@/lib/types";
+import { formatSecurityBoundary } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // 1. Data volume
@@ -879,6 +880,29 @@ describe("Active content output containment", () => {
     securityFindings.forEach(({ finding }) => {
       expect(finding.modelContextAccess).toBe("blocked");
       expect(finding.downstreamToolAccess).toBe("blocked");
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 22. Security boundary summaries
+// ---------------------------------------------------------------------------
+describe("Security boundary summaries", () => {
+  const securityFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? []).map((finding) => ({ email, finding })),
+  );
+
+  it("surfaces every enforced boundary in the finding summary", () => {
+    expect(securityFindings.length).toBeGreaterThan(0);
+
+    securityFindings.forEach(({ finding }) => {
+      const summary = formatSecurityBoundary(finding);
+
+      expect(summary).toContain("Control point: email ingress");
+      expect(summary).toContain("Model context blocked");
+      expect(summary).toContain("Active links/images blocked");
+      expect(summary).toContain("Isolation: information flow control");
+      expect(summary).toContain("Downstream tools blocked");
     });
   });
 });
