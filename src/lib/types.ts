@@ -14,6 +14,8 @@ export type ReviewReason =
   | "legal-risk"
   | "financial-risk";
 
+export type ContentNormalizationPolicy = "strip-invisible-before-matching";
+
 export interface PromptInjectionFinding {
   type: "prompt-injection";
   location: "hidden-body-text";
@@ -32,6 +34,8 @@ export interface PromptInjectionFinding {
   downstreamToolAccess: "blocked";
   /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
   activeContentHandling: "blocked";
+  /** Ingress rule that prevents invisible Unicode from bypassing content matching. */
+  normalizationPolicy: ContentNormalizationPolicy;
   detail: string;
 }
 
@@ -55,6 +59,8 @@ export interface DisplayNameSpoofingFinding {
   downstreamToolAccess: "blocked";
   /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
   activeContentHandling: "blocked";
+  /** Ingress rule that prevents invisible Unicode from bypassing content matching. */
+  normalizationPolicy: ContentNormalizationPolicy;
   /** Identity the sender claims, including display name and role. */
   claimedIdentity: string;
   /** Domain the message was actually sent from. */
@@ -84,6 +90,8 @@ export interface ThreadHijackFinding {
   downstreamToolAccess: "blocked";
   /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
   activeContentHandling: "blocked";
+  /** Ingress rule that prevents invisible Unicode from bypassing content matching. */
+  normalizationPolicy: ContentNormalizationPolicy;
   /** The existing conversation thread the message claims to continue. */
   claimedThreadSubject: string;
   /** Domains already established as participants in the thread history. */
@@ -105,6 +113,7 @@ export function formatSecurityBoundary(finding: EmailSecurityFinding): string {
     `Active links/images ${finding.activeContentHandling}`,
     `Isolation: ${finding.isolationPolicy.replaceAll("-", " ")}`,
     `Downstream tools ${finding.downstreamToolAccess}`,
+    `Content normalization: ${finding.normalizationPolicy.replaceAll("-", " ")}`,
   ].join(" · ");
 }
 

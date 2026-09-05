@@ -906,3 +906,30 @@ describe("Security boundary summaries", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 23. Pre-match content normalization
+// ---------------------------------------------------------------------------
+describe("Pre-match content normalization", () => {
+  const securityFindings = demoEmails.flatMap((email) =>
+    (email.securityFindings ?? []).map((finding) => ({ email, finding })),
+  );
+
+  it("strips invisible content before security matching", () => {
+    expect(securityFindings.length).toBeGreaterThan(0);
+
+    securityFindings.forEach(({ finding }) => {
+      expect(finding.normalizationPolicy).toBe(
+        "strip-invisible-before-matching",
+      );
+    });
+  });
+
+  it("includes normalization in the visible security boundary summary", () => {
+    securityFindings.forEach(({ finding }) => {
+      expect(formatSecurityBoundary(finding)).toContain(
+        "Content normalization: strip invisible before matching",
+      );
+    });
+  });
+});
