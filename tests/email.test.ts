@@ -873,6 +873,7 @@ describe("Active content output containment", () => {
 
     securityFindings.forEach(({ finding }) => {
       expect(finding.activeContentHandling).toBe("blocked");
+      expect(finding.attachmentHandling).toBe("blocked");
     });
   });
 
@@ -901,6 +902,7 @@ describe("Security boundary summaries", () => {
       expect(summary).toContain("Control point: email ingress");
       expect(summary).toContain("Model context blocked");
       expect(summary).toContain("Active links/images blocked");
+      expect(summary).toContain("Attachments blocked");
       expect(summary).toContain("Isolation: information flow control");
       expect(summary).toContain("Downstream tools blocked");
     });

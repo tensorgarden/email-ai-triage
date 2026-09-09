@@ -34,6 +34,8 @@ export interface PromptInjectionFinding {
   downstreamToolAccess: "blocked";
   /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
   activeContentHandling: "blocked";
+  /** Attachments remain outside model context until a human or trusted scanner clears them. */
+  attachmentHandling: "blocked";
   /** Ingress rule that prevents invisible Unicode from bypassing content matching. */
   normalizationPolicy: ContentNormalizationPolicy;
   detail: string;
@@ -59,6 +61,8 @@ export interface DisplayNameSpoofingFinding {
   downstreamToolAccess: "blocked";
   /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
   activeContentHandling: "blocked";
+  /** Attachments remain outside model context until a human or trusted scanner clears them. */
+  attachmentHandling: "blocked";
   /** Ingress rule that prevents invisible Unicode from bypassing content matching. */
   normalizationPolicy: ContentNormalizationPolicy;
   /** Identity the sender claims, including display name and role. */
@@ -90,6 +94,8 @@ export interface ThreadHijackFinding {
   downstreamToolAccess: "blocked";
   /** Active links, images, and other externally fetched content from this email are not rendered automatically. */
   activeContentHandling: "blocked";
+  /** Attachments remain outside model context until a human or trusted scanner clears them. */
+  attachmentHandling: "blocked";
   /** Ingress rule that prevents invisible Unicode from bypassing content matching. */
   normalizationPolicy: ContentNormalizationPolicy;
   /** The existing conversation thread the message claims to continue. */
@@ -111,6 +117,7 @@ export function formatSecurityBoundary(finding: EmailSecurityFinding): string {
     `Control point: ${finding.controlPoint.replaceAll("-", " ")}`,
     `Model context ${finding.modelContextAccess}`,
     `Active links/images ${finding.activeContentHandling}`,
+    `Attachments ${finding.attachmentHandling}`,
     `Isolation: ${finding.isolationPolicy.replaceAll("-", " ")}`,
     `Downstream tools ${finding.downstreamToolAccess}`,
     `Content normalization: ${finding.normalizationPolicy.replaceAll("-", " ")}`,
