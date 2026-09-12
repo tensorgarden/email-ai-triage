@@ -393,6 +393,9 @@ function EmailRow({ email }: { email: EmailThread }) {
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Badge label={CATEGORY_LABELS[email.category]} />
+          {email.securityFindings && email.securityFindings.length > 0 && (
+            <Badge label="Security hold" variant="high" />
+          )}
           <Badge label={email.priority} variant={PRIORITY_BADGE[email.priority]} />
         </div>
         <span className="text-xs text-slate-400">
