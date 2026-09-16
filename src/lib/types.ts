@@ -141,6 +141,8 @@ export interface EmailThread {
   confidence: number;
   isRead: boolean;
   aiSummary: string;
+  /** Security-held messages keep AI summaries visible as analyst context only, not trusted evidence. */
+  aiSummaryTrust?: "trusted" | "informational-only";
   /** Scanner findings that must be resolved before AI-generated actions are trusted. */
   securityFindings?: EmailSecurityFinding[];
   draftResponse: DraftResponse | null;

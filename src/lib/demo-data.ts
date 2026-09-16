@@ -419,6 +419,7 @@ Chief Financial Officer, CloudOps`,
     isRead: false,
     aiSummary:
       "Wire-transfer change request for the CloudOps invoice balance. Sender identity flagged: display name matches a CloudOps executive, but the sender domain is not the registered CloudOps domain. No draft or tasks generated.",
+    aiSummaryTrust: "informational-only",
     securityFindings: [
       {
         type: "display-name-spoofing",
@@ -473,6 +474,7 @@ CloudOps Remittance Desk`,
     isRead: false,
     aiSummary:
       "Hijacked-thread reply claiming updated payment details for the CloudOps invoice. The message presents as a continuation of an existing thread, but the sender domain is not part of that thread's participant history. No draft or tasks generated.",
+    aiSummaryTrust: "informational-only",
     securityFindings: [
       {
         type: "thread-hijack",
@@ -682,6 +684,7 @@ Domain Services Team`,
     isRead: false,
     aiSummary:
       "Phishing and hidden prompt-injection attempt quarantined. No legitimate domain referenced and no AI action allowed.",
+    aiSummaryTrust: "informational-only",
     securityFindings: [
       {
         type: "prompt-injection",

@@ -935,3 +935,30 @@ describe("Pre-match content normalization", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------------
+// 24. Security-held summary trust
+// ---------------------------------------------------------------------------
+describe("Security-held summary trust", () => {
+  it("marks every security-held summary as informational only", () => {
+    const securityHeldEmails = demoEmails.filter(
+      (email) => (email.securityFindings?.length ?? 0) > 0,
+    );
+
+    expect(securityHeldEmails.length).toBeGreaterThan(0);
+    securityHeldEmails.forEach((email) => {
+      expect(email.aiSummaryTrust).toBe("informational-only");
+    });
+  });
+
+  it("does not downgrade summaries for emails without security findings", () => {
+    const cleanEmails = demoEmails.filter(
+      (email) => (email.securityFindings?.length ?? 0) === 0,
+    );
+
+    expect(cleanEmails.length).toBeGreaterThan(0);
+    cleanEmails.forEach((email) => {
+      expect(email.aiSummaryTrust).toBeUndefined();
+    });
+  });
+});

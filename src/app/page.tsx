@@ -413,6 +413,14 @@ function EmailRow({ email }: { email: EmailThread }) {
             <p className="mt-1 text-sm leading-relaxed text-slate-700">
               {email.aiSummary}
             </p>
+            {email.aiSummaryTrust === "informational-only" && (
+              <p
+                role="note"
+                className="mt-2 rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium leading-relaxed text-red-700"
+              >
+                Security hold: treat this summary as analyst context only. Do not use it as evidence or an action trigger until the hold is cleared.
+              </p>
+            )}
           </div>
 
           {/* Email body preview */}
